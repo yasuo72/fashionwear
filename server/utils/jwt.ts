@@ -1,7 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { Response } from 'express';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('❌ JWT_SECRET environment variable is not set');
+  process.exit(1);
+}
+
 const JWT_EXPIRES_IN = '7d';
 
 export const generateToken = (payload: { id: string; email: string; role: string }) => {
