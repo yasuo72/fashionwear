@@ -1,10 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { connectDatabase } from "./config/database";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import cors from "cors";
+import morgan from "morgan";
 
 const app = express();
+
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: true, credentials: true }));
+app.use(morgan('dev'));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+connectDatabase();
 
 app.use((req, res, next) => {
   const start = Date.now();
