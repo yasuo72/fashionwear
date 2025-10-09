@@ -507,7 +507,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // ==================== ORDER ROUTES ====================
 
   // Get user orders
-  app.get("/api/orders", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/orders", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const orders = await Order.find({ userId: req.user!.id }).sort({ createdAt: -1 });
       res.json({ orders });
@@ -517,7 +517,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Get order by ID
-  app.get("/api/orders/:id", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/orders/:id", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const order = await Order.findOne({ _id: id, userId: req.user!.id });
@@ -533,7 +533,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Create order
-  app.post("/api/orders", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/orders", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const {
         items,
@@ -576,7 +576,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // ==================== WISHLIST ROUTES ====================
 
   // Get wishlist
-  app.get("/api/wishlist", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/wishlist", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       let wishlist = await Wishlist.findOne({ userId: req.user!.id }).populate("productIds");
 
@@ -591,7 +591,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Add to wishlist
-  app.post("/api/wishlist", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/wishlist", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { productId } = req.body;
 
@@ -613,7 +613,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Remove from wishlist
-  app.delete("/api/wishlist/:productId", authenticate, async (req: AuthRequest, res) => {
+  app.delete("/api/wishlist/:productId", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { productId } = req.params;
 
@@ -652,7 +652,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Create review
-  app.post("/api/reviews", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/reviews", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { productId, rating, title, comment } = req.body;
 
@@ -692,7 +692,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // ==================== COUPON ROUTES ====================
 
   // Validate coupon
-  app.post("/api/coupons/validate", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/coupons/validate", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { code, subtotal } = req.body;
 
@@ -745,7 +745,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // ==================== ADMIN ROUTES ====================
 
   // Get admin dashboard stats
-  app.get("/api/admin/stats", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.get("/api/admin/stats", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const [
         totalOrders,
@@ -781,7 +781,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Get all orders (admin)
-  app.get("/api/admin/orders", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.get("/api/admin/orders", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const orders = await Order.find()
         .sort({ createdAt: -1 })
@@ -794,7 +794,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Update order status (admin)
-  app.patch("/api/admin/orders/:id", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.patch("/api/admin/orders/:id", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { status, trackingNumber } = req.body;
@@ -816,7 +816,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Create category (admin)
-  app.post("/api/admin/categories", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.post("/api/admin/categories", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const { name, slug, description, image, parentId } = req.body;
 
@@ -835,7 +835,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Create product (admin)
-  app.post("/api/admin/products", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.post("/api/admin/products", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const {
         name,
@@ -874,7 +874,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Update product (admin)
-  app.patch("/api/admin/products/:id", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.patch("/api/admin/products/:id", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -896,7 +896,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Delete product (admin)
-  app.delete("/api/admin/products/:id", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.delete("/api/admin/products/:id", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       
@@ -917,7 +917,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   });
 
   // Create coupon (admin)
-  app.post("/api/admin/coupons", authenticate, isAdmin, async (req: AuthRequest, res) => {
+  app.post("/api/admin/coupons", authenticate, isAdmin, async (req: AuthRequest, res: Response) => {
     try {
       const {
         code,
@@ -1054,7 +1054,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         ...req.body,
         images: Array.isArray(images) ? images.filter(img => img && img.trim()) : [images].filter(Boolean),
         variants: Array.isArray(variants) ? variants : [variants],
-        tags: Array.isArray(req.body.tags) ? req.body.tags.filter(tag => tag && tag.trim()) : [],
+        tags: Array.isArray(req.body.tags) ? req.body.tags.filter((tag: string) => tag && tag.trim()) : [],
         price: Number(price),
         originalPrice: req.body.originalPrice ? Number(req.body.originalPrice) : undefined,
         discount: req.body.discount ? Number(req.body.discount) : undefined,
