@@ -15,6 +15,7 @@ import WishlistPage from "@/pages/WishlistPage";
 import LoginPage from "@/pages/LoginPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AdminDashboard from "@/pages/AdminDashboard";
+import SalePage from "@/pages/SalePage";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/register" component={LoginPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/sales" component={SalePage} />
       <Route component={NotFound} />
     </Switch>
   );

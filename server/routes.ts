@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import bcrypt from "bcryptjs";
 import { body, validationResult } from "express-validator";
@@ -15,7 +15,7 @@ import Wishlist from "./models/Wishlist";
 import Review from "./models/Review";
 import Coupon from "./models/Coupon";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: express.Application): Promise<Server> {
   
   // ==================== AUTH ROUTES ====================
   
@@ -131,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user
-  app.get("/api/auth/me", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/auth/me", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const user = await User.findById(req.user!.id).select("-password");
       if (!user) {
@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ==================== USER PROFILE ROUTES ====================
 
   // Update profile
-  app.patch("/api/user/profile", authenticate, async (req: AuthRequest, res) => {
+  app.patch("/api/user/profile", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { firstName, lastName, phone } = req.body;
       const user = await User.findByIdAndUpdate(
@@ -162,7 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Change password
-  app.post("/api/user/change-password", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/user/change-password", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { currentPassword, newPassword } = req.body;
 
@@ -188,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ==================== ADDRESS ROUTES ====================
 
   // Get user addresses
-  app.get("/api/addresses", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/addresses", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const addresses = await Address.find({ userId: req.user!.id });
       res.json({ addresses });
@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create address
-  app.post("/api/addresses", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/addresses", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { label, street, city, state, zipCode, country, phone, isDefault } = req.body;
 
@@ -228,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update address
-  app.patch("/api/addresses/:id", authenticate, async (req: AuthRequest, res) => {
+  app.patch("/api/addresses/:id", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { label, street, city, state, zipCode, country, phone, isDefault } = req.body;
@@ -257,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete address
-  app.delete("/api/addresses/:id", authenticate, async (req: AuthRequest, res) => {
+  app.delete("/api/addresses/:id", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const address = await Address.findOneAndDelete({ _id: id, userId: req.user!.id });
@@ -275,7 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ==================== CATEGORY ROUTES ====================
 
   // Get all categories
-  app.get("/api/categories", async (req, res) => {
+  app.get("/api/categories", async (req: Request, res: Response) => {
     try {
       const categories = await Category.find({ isActive: true });
       res.json({ categories });
@@ -285,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get category by slug
-  app.get("/api/categories/:slug", async (req, res) => {
+  app.get("/api/categories/:slug", async (req: Request, res: Response) => {
     try {
       const { slug } = req.params;
       const category = await Category.findOne({ slug, isActive: true });
@@ -303,7 +303,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ==================== PRODUCT ROUTES ====================
 
   // Get all products with filters
-  app.get("/api/products", async (req, res) => {
+  app.get("/api/products", async (req: Request, res: Response) => {
     try {
       const {
         category,
@@ -369,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get product by slug
-  app.get("/api/products/:slug", async (req, res) => {
+  app.get("/api/products/:slug", async (req: Request, res: Response) => {
     try {
       const { slug } = req.params;
       const product = await Product.findOne({ slug, isActive: true })
@@ -388,7 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ==================== CART ROUTES ====================
 
   // Get cart
-  app.get("/api/cart", authenticate, async (req: AuthRequest, res) => {
+  app.get("/api/cart", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       let cart = await Cart.findOne({ userId: req.user!.id }).populate("items.productId");
 
@@ -403,7 +403,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Add to cart
-  app.post("/api/cart", authenticate, async (req: AuthRequest, res) => {
+  app.post("/api/cart", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { productId, quantity, size, color, price } = req.body;
 
@@ -436,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update cart item
-  app.patch("/api/cart/:itemId", authenticate, async (req: AuthRequest, res) => {
+  app.patch("/api/cart/:itemId", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { itemId } = req.params;
       const { quantity } = req.body;
@@ -469,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove from cart
-  app.delete("/api/cart/:itemId", authenticate, async (req: AuthRequest, res) => {
+  app.delete("/api/cart/:itemId", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { itemId } = req.params;
 
@@ -490,7 +490,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Clear cart
-  app.delete("/api/cart", authenticate, async (req: AuthRequest, res) => {
+  app.delete("/api/cart", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const cart = await Cart.findOneAndUpdate(
         { userId: req.user!.id },
@@ -946,6 +946,370 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json({ coupon });
     } catch (error) {
       res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Admin Routes
+  // Admin middleware to check if user is admin
+  const adminAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+  };
+
+  // Admin Stats
+  app.get("/api/admin/stats", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const totalOrders = await Order.countDocuments();
+      const totalProducts = await Product.countDocuments();
+      const totalUsers = await User.countDocuments();
+      
+      // Calculate total revenue
+      const revenueResult = await Order.aggregate([
+        { $match: { status: { $ne: 'cancelled' } } },
+        { $group: { _id: null, total: { $sum: "$total" } } }
+      ]);
+      const totalRevenue = revenueResult[0]?.total || 0;
+
+      // Mock growth percentages (in real app, calculate from historical data)
+      const stats = {
+        totalRevenue,
+        totalOrders,
+        activeUsers: totalUsers,
+        totalProducts,
+        revenueGrowth: 12.5,
+        ordersGrowth: 8.2,
+        usersGrowth: 15.3
+      };
+
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Admin Orders
+  app.get("/api/admin/orders", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const orders = await Order.find()
+        .populate('userId', 'firstName lastName email')
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      res.json({ orders });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Update Order Status
+  app.patch("/api/admin/orders/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const order = await Order.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true }
+      ).populate('userId', 'firstName lastName email');
+
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json({ order });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // Admin Products
+  app.get("/api/admin/products", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const products = await Product.find().populate('categoryId', 'name').sort({ createdAt: -1 });
+      res.json({ products });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  // Create Product
+  app.post("/api/admin/products", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      console.log("Creating product with data:", req.body);
+      
+      // Validate required fields
+      const { name, description, price, categoryId, images, variants } = req.body;
+      
+      if (!name || !description || !price || !categoryId || !images || !variants) {
+        return res.status(400).json({ 
+          message: "Missing required fields: name, description, price, categoryId, images, variants" 
+        });
+      }
+
+      // Ensure arrays are properly formatted
+      const productData = {
+        ...req.body,
+        images: Array.isArray(images) ? images.filter(img => img && img.trim()) : [images].filter(Boolean),
+        variants: Array.isArray(variants) ? variants : [variants],
+        tags: Array.isArray(req.body.tags) ? req.body.tags.filter(tag => tag && tag.trim()) : [],
+        price: Number(price),
+        originalPrice: req.body.originalPrice ? Number(req.body.originalPrice) : undefined,
+        discount: req.body.discount ? Number(req.body.discount) : undefined,
+      };
+
+      console.log("Processed product data:", productData);
+      
+      const product = await Product.create(productData);
+      res.status(201).json({ product });
+    } catch (error: any) {
+      console.error("Product creation error:", error);
+      
+      if (error.code === 11000) {
+        return res.status(400).json({ message: "Product with this slug already exists" });
+      }
+      
+      if (error.name === 'ValidationError') {
+        const validationErrors = Object.values(error.errors).map((err: any) => err.message);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationErrors 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to create product", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Update Product
+  app.patch("/api/admin/products/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ product });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  // Delete Product
+  app.delete("/api/admin/products/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const product = await Product.findByIdAndDelete(id);
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
+  // Admin Users
+  app.get("/api/admin/users", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const users = await User.find().select('-password').sort({ createdAt: -1 });
+      res.json({ users });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Update User Role
+  app.patch("/api/admin/users/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+
+      const user = await User.findByIdAndUpdate(
+        id,
+        { role },
+        { new: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ user });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update user role" });
+    }
+  });
+
+  // Top Products Analytics
+  app.get("/api/admin/analytics/top-products", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      // Mock data for now - in real app, calculate from order items
+      const products = [
+        { name: "Cotton T-Shirt", sales: 342, revenue: 567554 },
+        { name: "Denim Jeans", sales: 289, revenue: 1198461 },
+        { name: "Summer Dress", sales: 256, revenue: 849728 },
+        { name: "Running Shoes", sales: 234, revenue: 1358378 },
+        { name: "Winter Jacket", sales: 198, revenue: 1477566 },
+      ];
+
+      res.json({ products });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch top products" });
+    }
+  });
+
+  // Admin Categories
+  app.get("/api/admin/categories", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const categories = await Category.find().sort({ createdAt: -1 });
+      res.json({ categories });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Create Category
+  app.post("/api/admin/categories", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { name, description, slug, image, isActive } = req.body;
+      const category = await Category.create({
+        name,
+        description,
+        slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
+        image,
+        isActive: isActive !== undefined ? isActive : true
+      });
+      res.status(201).json({ category });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  // Update Category
+  app.patch("/api/admin/categories/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const category = await Category.findByIdAndUpdate(id, req.body, { new: true });
+      
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+
+      res.json({ category });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
+  // Delete Category
+  app.delete("/api/admin/categories/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      
+      // Check if category has products
+      const productCount = await Product.countDocuments({ categoryId: id });
+      if (productCount > 0) {
+        return res.status(400).json({ message: "Cannot delete category with existing products" });
+      }
+
+      const category = await Category.findByIdAndDelete(id);
+      
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+
+      res.json({ message: "Category deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
+  // Admin Coupons
+  app.get("/api/admin/coupons", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const coupons = await Coupon.find().sort({ createdAt: -1 });
+      res.json({ coupons });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch coupons" });
+    }
+  });
+
+  // Create Coupon
+  app.post("/api/admin/coupons", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const {
+        code,
+        type,
+        value,
+        minOrderAmount,
+        maxDiscountAmount,
+        usageLimit,
+        validFrom,
+        validUntil,
+        isActive
+      } = req.body;
+
+      const coupon = await Coupon.create({
+        code: code.toUpperCase(),
+        type,
+        value,
+        minOrderAmount,
+        maxDiscountAmount,
+        usageLimit,
+        validFrom,
+        validUntil,
+        isActive: isActive !== undefined ? isActive : true
+      });
+
+      res.status(201).json({ coupon });
+    } catch (error: any) {
+      if (error.code === 11000) {
+        res.status(400).json({ message: "Coupon code already exists" });
+      } else {
+        res.status(500).json({ message: "Failed to create coupon" });
+      }
+    }
+  });
+
+  // Update Coupon
+  app.patch("/api/admin/coupons/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const coupon = await Coupon.findByIdAndUpdate(id, req.body, { new: true });
+      
+      if (!coupon) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+
+      res.json({ coupon });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update coupon" });
+    }
+  });
+
+  // Delete Coupon
+  app.delete("/api/admin/coupons/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const coupon = await Coupon.findByIdAndDelete(id);
+      
+      if (!coupon) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+
+      res.json({ message: "Coupon deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete coupon" });
     }
   });
 

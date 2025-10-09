@@ -79,7 +79,7 @@ export function CartItem({ id, name, price, image, size, color, initialQuantity 
             </div>
 
             <div className="text-lg font-bold" data-testid={`text-total-${id}`}>
-              ${(price * quantity).toFixed(2)}
+              ₹{(price * quantity).toFixed(0)}
             </div>
           </div>
         </div>

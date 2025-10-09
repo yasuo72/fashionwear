@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, ShoppingCart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAddToCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
-  id: string;
+  id: string; // This is the slug for navigation
+  productId?: string; // This is the actual _id for API calls
   name: string;
   price: number;
   originalPrice?: number;
@@ -19,6 +23,7 @@ interface ProductCardProps {
 
 export function ProductCard({
   id,
+  productId,
   name,
   price,
   originalPrice,
@@ -29,6 +34,45 @@ export function ProductCard({
   badge,
 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { data: authData } = useAuth();
+  const addToCart = useAddToCart();
+  
+  const user = authData?.user;
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be logged in to add items to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await addToCart.mutateAsync({
+        productId: productId || id, // Use productId if available, fallback to id
+        quantity: 1,
+        size: "M", // Default size - in a real app, this would be selected by user
+        color: "Default", // Default color
+        price: price,
+      });
+      
+      toast({
+        title: "Added to cart!",
+        description: `${name} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="group overflow-hidden hover-elevate transition-all duration-300">
@@ -81,16 +125,28 @@ export function ProductCard({
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold" data-testid={`text-price-${id}`}>
-            ${price}
-          </span>
-          {originalPrice && (
-            <span className="text-sm text-muted-foreground line-through" data-testid={`text-original-price-${id}`}>
-              ${originalPrice}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold" data-testid={`text-price-${id}`}>
+              ₹{price}
             </span>
-          )}
+            {originalPrice && (
+              <span className="text-sm text-muted-foreground line-through ml-2">
+                ₹{originalPrice}
+              </span>
+            )}
+          </div>
         </div>
+
+        <Button 
+          onClick={handleAddToCart}
+          disabled={addToCart.isPending}
+          size="sm"
+          data-testid={`button-add-to-cart-${id}`}
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          {addToCart.isPending ? "Adding..." : "Add to Cart"}
+        </Button>
       </div>
     </Card>
   );
