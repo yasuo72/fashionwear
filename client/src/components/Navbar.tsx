@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Search, ShoppingCart, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { useCart } from "@/hooks/useCart";
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [, setLocation] = useLocation();
   
   const { data: authData } = useAuth();
   const { data: cartData } = useCart();
@@ -27,6 +28,14 @@ export function Navbar() {
   const user = authData?.user;
   const cartCount = cartData?.cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
   const wishlistCount = 0; // TODO: Implement wishlist count
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileMenuOpen(false);
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,7 +48,7 @@ export function Navbar() {
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <div className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
@@ -47,9 +56,10 @@ export function Navbar() {
                 className="pl-10 w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
                 data-testid="input-search"
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-2">
@@ -135,15 +145,17 @@ export function Navbar() {
 
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t">
-            <div className="relative mb-4">
+            <form onSubmit={handleSearch} className="relative mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search products..."
                 className="pl-10 w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 data-testid="input-mobile-search"
               />
-            </div>
+            </form>
           </div>
         )}
       </div>
@@ -162,6 +174,9 @@ export function Navbar() {
             </Link>
             <Link href="/category/accessories" className="hover-elevate px-3 py-2 rounded-md transition-colors" data-testid="link-category-accessories">
               Accessories
+            </Link>
+            <Link href="/blog" className="hover-elevate px-3 py-2 rounded-md transition-colors" data-testid="link-blog">
+              Blog
             </Link>
             <Link href="/sales" className="hover-elevate px-3 py-2 rounded-md transition-colors text-destructive font-medium" data-testid="link-sales">
               Sale

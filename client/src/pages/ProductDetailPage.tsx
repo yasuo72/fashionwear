@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { ProductCard } from "@/components/ProductCard";
 import { Footer } from "@/components/Footer";
@@ -7,33 +8,106 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Heart, Share2, Truck, Shield, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-
-const relatedProducts = [
-  { id: "10", name: "Similar T-Shirt", price: 24.99, image: "https://images.unsplash.com/photo-1503341733017-1901578f9f1e?w=400&h=400&fit=crop", rating: 4.3, reviews: 67 },
-  { id: "11", name: "Polo Shirt", price: 34.99, image: "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=400&h=400&fit=crop", rating: 4.6, reviews: 89 },
-  { id: "12", name: "Graphic Tee", price: 27.99, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=400&fit=crop", rating: 4.7, reviews: 156 },
-  { id: "13", name: "V-Neck Shirt", price: 29.99, image: "https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=400&h=400&fit=crop", rating: 4.5, reviews: 92 },
-];
+import { useProduct, useProducts } from "@/hooks/useProducts";
+import { useAddToCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 export default function ProductDetailPage() {
+  const { id: slug } = useParams();
+  const { data: productData, isLoading, error } = useProduct(slug!);
+  const { data: relatedProductsData } = useProducts({ limit: 4 });
+  const { data: authData } = useAuth();
+  const addToCart = useAddToCart();
+  
+  const product = productData?.product;
+  const relatedProducts = relatedProductsData?.products || [];
+  const user = authData?.user;
+
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("M");
-  const [selectedColor, setSelectedColor] = useState("Blue");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  const images = [
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1503341733017-1901578f9f1e?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=600&h=600&fit=crop",
-  ];
+  // Get unique sizes and colors from variants
+  const sizes = product ? Array.from(new Set(product.variants.map(v => v.size))) : [];
+  const colors = product ? Array.from(new Set(product.variants.map(v => v.color))) : [];
 
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const colors = [
-    { name: "Blue", hex: "#3B82F6" },
-    { name: "Black", hex: "#000000" },
-    { name: "White", hex: "#FFFFFF" },
-    { name: "Gray", hex: "#6B7280" },
-  ];
+  // Set initial size and color when product loads
+  if (product && !selectedSize && sizes.length > 0) {
+    setSelectedSize(sizes[0]);
+  }
+  if (product && !selectedColor && colors.length > 0) {
+    setSelectedColor(colors[0]);
+  }
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be logged in to add items to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedSize || !selectedColor) {
+      toast({
+        title: "Please select options",
+        description: "Please select size and color before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await addToCart.mutateAsync({
+        productId: product!._id,
+        quantity,
+        size: selectedSize,
+        color: selectedColor,
+        price: product!.price,
+      });
+      
+      toast({
+        title: "Added to cart!",
+        description: `${product!.name} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <p>Loading product...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <Card className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
+            <p className="text-muted-foreground">The product you're looking for doesn't exist.</p>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,7 +117,7 @@ export default function ProductDetailPage() {
         <div className="bg-muted py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-sm text-muted-foreground">
-              Home / Men / T-Shirts / <span className="text-foreground font-medium">Classic Cotton T-Shirt</span>
+              Home / {product.categoryId?.name || 'Products'} / <span className="text-foreground font-medium">{product.name}</span>
             </div>
           </div>
         </div>
@@ -53,13 +127,13 @@ export default function ProductDetailPage() {
             <div>
               <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
                 <img
-                  src={images[selectedImage]}
+                  src={product.images[selectedImage]}
                   alt="Product"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
-                {images.map((image, index) => (
+                {product.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -78,14 +152,14 @@ export default function ProductDetailPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h1 className="text-3xl font-bold mb-2" data-testid="text-product-title">
-                    Classic Cotton T-Shirt
+                    {product.name}
                   </h1>
                   <div className="flex items-center gap-2 mb-4">
                     <div className="flex items-center">
                       <Star className="h-5 w-5 fill-primary text-primary" />
-                      <span className="font-semibold ml-1">4.5</span>
+                      <span className="font-semibold ml-1">{product.rating}</span>
                     </div>
-                    <span className="text-muted-foreground">(128 reviews)</span>
+                    <span className="text-muted-foreground">({product.reviewCount} reviews)</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -99,9 +173,13 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold" data-testid="text-product-price">$29.99</span>
-                <span className="text-xl text-muted-foreground line-through">$49.99</span>
-                <Badge className="bg-chart-3 text-white">40% OFF</Badge>
+                <span className="text-3xl font-bold" data-testid="text-product-price">₹{product.price}</span>
+                {product.originalPrice && (
+                  <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice}</span>
+                )}
+                {product.discount && (
+                  <Badge className="bg-chart-3 text-white">{product.discount}% OFF</Badge>
+                )}
               </div>
 
               <div className="space-y-6">
@@ -123,18 +201,16 @@ export default function ProductDetailPage() {
 
                 <div>
                   <h3 className="font-semibold mb-3">Select Color</h3>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap">
                     {colors.map((color) => (
-                      <button
-                        key={color.name}
-                        onClick={() => setSelectedColor(color.name)}
-                        className={`w-10 h-10 rounded-full border-2 transition-all ${
-                          selectedColor === color.name ? "border-primary scale-110" : "border-border"
-                        }`}
-                        style={{ backgroundColor: color.hex }}
-                        title={color.name}
-                        data-testid={`button-color-${color.name.toLowerCase()}`}
-                      />
+                      <Button
+                        key={color}
+                        variant={selectedColor === color ? "default" : "outline"}
+                        onClick={() => setSelectedColor(color)}
+                        data-testid={`button-color-${color.toLowerCase()}`}
+                      >
+                        {color}
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -161,8 +237,14 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="flex-1" size="lg" data-testid="button-add-to-cart">
-                    Add to Cart
+                  <Button 
+                    className="flex-1" 
+                    size="lg" 
+                    onClick={handleAddToCart}
+                    disabled={addToCart.isPending}
+                    data-testid="button-add-to-cart"
+                  >
+                    {addToCart.isPending ? "Adding..." : "Add to Cart"}
                   </Button>
                   <Button variant="outline" className="flex-1" size="lg" data-testid="button-buy-now">
                     Buy Now
@@ -196,15 +278,25 @@ export default function ProductDetailPage() {
             <TabsContent value="description" className="mt-6">
               <Card className="p-6">
                 <p className="text-muted-foreground leading-relaxed">
-                  Premium quality cotton t-shirt designed for ultimate comfort and style. Features a classic crew neck design,
-                  short sleeves, and a regular fit. Made from 100% organic cotton for breathability and durability. Perfect for
-                  casual wear or layering. Machine washable and pre-shrunk for a lasting fit.
+                  {product.description}
                 </p>
+                {product.brand && (
+                  <div className="mt-4">
+                    <p className="font-semibold">Brand: <span className="font-normal">{product.brand}</span></p>
+                  </div>
+                )}
+                {product.tags && product.tags.length > 0 && (
+                  <div className="mt-4 flex gap-2 flex-wrap">
+                    {product.tags.map((tag, i) => (
+                      <Badge key={i} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                )}
               </Card>
             </TabsContent>
             <TabsContent value="reviews" className="mt-6">
               <Card className="p-6">
-                <p className="text-muted-foreground">Customer reviews will be displayed here.</p>
+                <p className="text-muted-foreground">Customer reviews will be displayed here. ({product.reviewCount} reviews)</p>
               </Card>
             </TabsContent>
             <TabsContent value="size-guide" className="mt-6">
@@ -217,8 +309,19 @@ export default function ProductDetailPage() {
           <div>
             <h2 className="text-2xl font-semibold mb-6">You May Also Like</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {relatedProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
+              {relatedProducts.map((prod) => (
+                <ProductCard 
+                  key={prod._id} 
+                  id={prod.slug}
+                  productId={prod._id}
+                  name={prod.name}
+                  price={prod.price}
+                  originalPrice={prod.originalPrice}
+                  image={prod.images[0]}
+                  rating={prod.rating}
+                  reviews={prod.reviewCount}
+                  discount={prod.discount}
+                />
               ))}
             </div>
           </div>

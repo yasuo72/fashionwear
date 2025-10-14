@@ -70,17 +70,29 @@ export function ProductManagement({
     try {
       // Validate required fields
       if (!productForm.name || !productForm.description || !productForm.price || !productForm.categoryId) {
-        alert("Please fill in all required fields: name, description, price, and category.");
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields: name, description, price, and category.",
+          variant: "destructive"
+        });
         return;
       }
 
       if (productForm.images.filter(img => img.trim() !== '').length === 0) {
-        alert("Please add at least one product image.");
+        toast({
+          title: "Validation Error",
+          description: "Please add at least one product image.",
+          variant: "destructive"
+        });
         return;
       }
 
       if (productForm.variants.length === 0 || !productForm.variants[0].size || !productForm.variants[0].color) {
-        alert("Please add at least one product variant with size and color.");
+        toast({
+          title: "Validation Error",
+          description: "Please add at least one product variant with size and color.",
+          variant: "destructive"
+        });
         return;
       }
 
@@ -90,9 +102,9 @@ export function ProductManagement({
         tags: productForm.tags.filter(tag => tag.trim() !== ''),
         images: productForm.images.filter(img => img.trim() !== ''),
         variants: productForm.variants.filter(variant => variant.size && variant.color),
-        price: Number(productForm.price) || 0,
-        originalPrice: Number(productForm.originalPrice) || undefined,
-        discount: Number(productForm.discount) || undefined,
+        price: Number(productForm.price),
+        originalPrice: Number(productForm.originalPrice) > 0 ? Number(productForm.originalPrice) : undefined,
+        discount: Number(productForm.discount) > 0 ? Number(productForm.discount) : undefined,
       };
 
       console.log("Submitting product data:", formData);

@@ -30,7 +30,7 @@ export interface AdminOrder {
     color: string;
   }>;
   total: number;
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   createdAt: string;
   shippingAddress: {
     street: string;

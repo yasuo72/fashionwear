@@ -30,10 +30,11 @@ export function CouponManagement({
   
   const [couponForm, setCouponForm] = useState({
     code: "",
-    type: "percentage",
-    value: 0,
-    minOrderAmount: 0,
-    maxDiscountAmount: 0,
+    description: "",
+    discountType: "percentage",
+    discountValue: 0,
+    minPurchase: 0,
+    maxDiscount: 0,
     usageLimit: 0,
     validFrom: "",
     validUntil: "",
@@ -43,10 +44,11 @@ export function CouponManagement({
   const resetForm = () => {
     setCouponForm({
       code: "",
-      type: "percentage",
-      value: 0,
-      minOrderAmount: 0,
-      maxDiscountAmount: 0,
+      description: "",
+      discountType: "percentage",
+      discountValue: 0,
+      minPurchase: 0,
+      maxDiscount: 0,
       usageLimit: 0,
       validFrom: "",
       validUntil: "",
@@ -57,12 +59,22 @@ export function CouponManagement({
 
   const handleSubmit = async () => {
     try {
+      // Validate required fields
+      if (!couponForm.code || !couponForm.description || !couponForm.discountValue || !couponForm.validFrom || !couponForm.validUntil) {
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields: code, description, discount value, valid from, and valid until.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const formData = {
         ...couponForm,
         code: couponForm.code.toUpperCase(),
-        value: Number(couponForm.value),
-        minOrderAmount: Number(couponForm.minOrderAmount) || undefined,
-        maxDiscountAmount: Number(couponForm.maxDiscountAmount) || undefined,
+        discountValue: Number(couponForm.discountValue),
+        minPurchase: Number(couponForm.minPurchase) || undefined,
+        maxDiscount: Number(couponForm.maxDiscount) || undefined,
         usageLimit: Number(couponForm.usageLimit) || undefined,
       };
 
@@ -83,10 +95,11 @@ export function CouponManagement({
     setEditingCoupon(coupon);
     setCouponForm({
       code: coupon.code,
-      type: coupon.type,
-      value: coupon.value,
-      minOrderAmount: coupon.minOrderAmount || 0,
-      maxDiscountAmount: coupon.maxDiscountAmount || 0,
+      description: coupon.description || "",
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      minPurchase: coupon.minPurchase || 0,
+      maxDiscount: coupon.maxDiscount || 0,
       usageLimit: coupon.usageLimit || 0,
       validFrom: coupon.validFrom ? new Date(coupon.validFrom).toISOString().split('T')[0] : "",
       validUntil: coupon.validUntil ? new Date(coupon.validUntil).toISOString().split('T')[0] : "",
@@ -150,20 +163,32 @@ export function CouponManagement({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="code">Coupon Code</Label>
+                  <Label htmlFor="code">Coupon Code *</Label>
                   <Input
                     id="code"
                     value={couponForm.code}
                     onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
                     placeholder="SAVE20"
+                    required
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="type">Discount Type</Label>
+                  <Label htmlFor="description">Description *</Label>
+                  <Input
+                    id="description"
+                    value={couponForm.description}
+                    onChange={(e) => setCouponForm({ ...couponForm, description: e.target.value })}
+                    placeholder="Get 20% off on all items"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="discountType">Discount Type</Label>
                   <Select
-                    value={couponForm.type}
-                    onValueChange={(value) => setCouponForm({ ...couponForm, type: value })}
+                    value={couponForm.discountType}
+                    onValueChange={(value) => setCouponForm({ ...couponForm, discountType: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select discount type" />
@@ -176,38 +201,39 @@ export function CouponManagement({
                 </div>
                 
                 <div>
-                  <Label htmlFor="value">
-                    Discount Value {couponForm.type === 'percentage' ? '(%)' : '(₹)'}
+                  <Label htmlFor="discountValue">
+                    Discount Value * {couponForm.discountType === 'percentage' ? '(%)' : '(₹)'}
                   </Label>
                   <Input
-                    id="value"
+                    id="discountValue"
                     type="number"
-                    value={couponForm.value}
-                    onChange={(e) => setCouponForm({ ...couponForm, value: parseFloat(e.target.value) || 0 })}
-                    placeholder={couponForm.type === 'percentage' ? '20' : '10.00'}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="minOrderAmount">Minimum Order Amount (₹)</Label>
-                  <Input
-                    id="minOrderAmount"
-                    type="number"
-                    value={couponForm.minOrderAmount}
-                    onChange={(e) => setCouponForm({ ...couponForm, minOrderAmount: parseFloat(e.target.value) || 0 })}
-                    placeholder="0.00"
+                    value={couponForm.discountValue}
+                    onChange={(e) => setCouponForm({ ...couponForm, discountValue: parseFloat(e.target.value) || 0 })}
+                    placeholder={couponForm.discountType === 'percentage' ? '20' : '10.00'}
+                    required
                   />
                 </div>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="maxDiscountAmount">Max Discount Amount (₹)</Label>
+                  <Label htmlFor="minPurchase">Minimum Purchase Amount (₹)</Label>
                   <Input
-                    id="maxDiscountAmount"
+                    id="minPurchase"
                     type="number"
-                    value={couponForm.maxDiscountAmount}
-                    onChange={(e) => setCouponForm({ ...couponForm, maxDiscountAmount: parseFloat(e.target.value) || 0 })}
+                    value={couponForm.minPurchase}
+                    onChange={(e) => setCouponForm({ ...couponForm, minPurchase: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="maxDiscount">Max Discount Amount (₹)</Label>
+                  <Input
+                    id="maxDiscount"
+                    type="number"
+                    value={couponForm.maxDiscount}
+                    onChange={(e) => setCouponForm({ ...couponForm, maxDiscount: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00 (unlimited)"
                   />
                 </div>
@@ -224,7 +250,7 @@ export function CouponManagement({
                 </div>
                 
                 <div>
-                  <Label htmlFor="validFrom">Valid From</Label>
+                  <Label htmlFor="validFrom">Valid From *</Label>
                   <Input
                     id="validFrom"
                     type="date"
@@ -234,7 +260,7 @@ export function CouponManagement({
                 </div>
                 
                 <div>
-                  <Label htmlFor="validUntil">Valid Until</Label>
+                  <Label htmlFor="validUntil">Valid Until *</Label>
                   <Input
                     id="validUntil"
                     type="date"

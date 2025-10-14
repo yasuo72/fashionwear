@@ -161,52 +161,37 @@ export default function AdminDashboard() {
     );
   }
 
-  const handleCreateProduct = async () => {
+  const handleCreateProduct = async (data: any) => {
     try {
-      await createProduct.mutateAsync({
-        ...productForm,
-        slug: productForm.name.toLowerCase().replace(/\s+/g, '-'),
-        tags: productForm.tags.filter(tag => tag.trim() !== ''),
-        images: productForm.images.filter(img => img.trim() !== ''),
-      });
+      await createProduct.mutateAsync(data);
       toast({
         title: "Product Created",
         description: "Product has been created successfully.",
       });
-      setShowProductDialog(false);
-      resetProductForm();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to create product. Please try again.",
+        description: error?.message || "Failed to create product. Please try again.",
         variant: "destructive",
       });
+      throw error;
     }
   };
 
-  const handleUpdateProduct = async () => {
-    if (!editingProduct) return;
-    
+  const handleUpdateProduct = async (data: any) => {
     try {
-      await updateProduct.mutateAsync({
-        _id: editingProduct._id,
-        ...productForm,
-        tags: productForm.tags.filter(tag => tag.trim() !== ''),
-        images: productForm.images.filter(img => img.trim() !== ''),
-      });
+      await updateProduct.mutateAsync(data);
       toast({
         title: "Product Updated",
         description: "Product has been updated successfully.",
       });
-      setShowProductDialog(false);
-      setEditingProduct(null);
-      resetProductForm();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update product. Please try again.",
+        description: error?.message || "Failed to update product. Please try again.",
         variant: "destructive",
       });
+      throw error;
     }
   };
 
@@ -381,7 +366,7 @@ export default function AdminDashboard() {
   const getOrderStatusIcon = (status: string) => {
     switch (status) {
       case 'pending': return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'confirmed': return <CheckCircle className="h-4 w-4 text-blue-500" />;
+      case 'processing': return <CheckCircle className="h-4 w-4 text-blue-500" />;
       case 'shipped': return <Truck className="h-4 w-4 text-purple-500" />;
       case 'delivered': return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'cancelled': return <X className="h-4 w-4 text-red-500" />;

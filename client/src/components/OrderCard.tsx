@@ -8,17 +8,18 @@ interface OrderCardProps {
   id: string;
   orderNumber: string;
   date: string;
-  status: "processing" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   items: number;
   total: number;
   image: string;
 }
 
 const statusConfig = {
-  processing: { label: "Processing", color: "bg-chart-1 text-white" },
-  shipped: { label: "Shipped", color: "bg-accent text-white" },
-  delivered: { label: "Delivered", color: "bg-chart-3 text-white" },
-  cancelled: { label: "Cancelled", color: "bg-destructive text-white" },
+  pending: { label: "Pending", color: "bg-yellow-500 text-white" },
+  processing: { label: "Processing", color: "bg-blue-500 text-white" },
+  shipped: { label: "Shipped", color: "bg-purple-500 text-white" },
+  delivered: { label: "Delivered", color: "bg-green-500 text-white" },
+  cancelled: { label: "Cancelled", color: "bg-red-500 text-white" },
 };
 
 export function OrderCard({ id, orderNumber, date, status, items, total, image }: OrderCardProps) {
@@ -45,7 +46,7 @@ export function OrderCard({ id, orderNumber, date, status, items, total, image }
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
             <span data-testid={`text-order-items-${id}`}>{items} items</span>
             <span>•</span>
-            <span className="font-semibold text-foreground" data-testid={`text-order-total-${id}`}>Total: ${total}</span>
+            <span className="font-semibold text-foreground" data-testid={`text-order-total-${id}`}>Total: ₹{total.toFixed(0)}</span>
           </div>
 
           <div className="flex gap-2">

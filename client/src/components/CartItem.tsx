@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useUpdateCartItem, useRemoveFromCart } from "@/hooks/useCart";
 
 interface CartItemProps {
   id: string;
@@ -15,17 +16,29 @@ interface CartItemProps {
 
 export function CartItem({ id, name, price, image, size, color, initialQuantity }: CartItemProps) {
   const [quantity, setQuantity] = useState(initialQuantity);
+  const updateCartItem = useUpdateCartItem();
+  const removeFromCart = useRemoveFromCart();
+
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
 
   const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+    if (quantity > 1) {
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      updateCartItem.mutate({ itemId: id, quantity: newQuantity });
+    }
   };
 
   const increaseQuantity = () => {
-    setQuantity(quantity + 1);
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    updateCartItem.mutate({ itemId: id, quantity: newQuantity });
   };
 
   const removeItem = () => {
-    console.log(`Remove item ${id}`);
+    removeFromCart.mutate(id);
   };
 
   return (
