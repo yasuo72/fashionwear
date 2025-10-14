@@ -278,7 +278,39 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   app.get("/api/categories", async (req: Request, res: Response) => {
     try {
       const categories = await Category.find({ isActive: true });
-      res.json({ categories });
+      
+      // Add product count for each category (including subcategories)
+      const categoriesWithCount = await Promise.all(
+        categories.map(async (category) => {
+          // Count products in this category
+          const directCount = await Product.countDocuments({ 
+            categoryId: category._id,
+            isActive: true 
+          });
+          
+          // Count products in subcategories
+          const subcategories = await Category.find({ 
+            parentId: category._id,
+            isActive: true 
+          });
+          
+          let subcategoryCount = 0;
+          for (const subcat of subcategories) {
+            const count = await Product.countDocuments({ 
+              categoryId: subcat._id,
+              isActive: true 
+            });
+            subcategoryCount += count;
+          }
+          
+          return {
+            ...category.toObject(),
+            productCount: directCount + subcategoryCount
+          };
+        })
+      );
+      
+      res.json({ categories: categoriesWithCount });
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
@@ -295,6 +327,18 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       }
 
       res.json({ category });
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Get unique brands
+  app.get("/api/brands", async (req: Request, res: Response) => {
+    try {
+      const allBrands = await Product.distinct("brand", { isActive: true });
+      // Filter out null, undefined, and empty strings
+      const brands = allBrands.filter((brand: any) => brand && brand.trim() !== "").sort();
+      res.json({ brands });
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
@@ -660,8 +704,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // Create review
   app.post("/api/reviews", authenticate, async (req: AuthRequest, res) => {
     try {
-      const { productId, rating, title, comment } = req.body;
+      const { productId, orderId, rating, title, comment, images } = req.body;
 
+      // Check if user already reviewed this product
       const existingReview = await Review.findOne({
         productId,
         userId: req.user!.id,
@@ -671,14 +716,35 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         return res.status(400).json({ error: "You have already reviewed this product" });
       }
 
+      // Check if user has purchased this product (optional but recommended)
+      let isVerified = false;
+      if (orderId) {
+        const order = await Order.findOne({
+          _id: orderId,
+          userId: req.user!.id,
+          status: 'delivered'
+        });
+        
+        if (order) {
+          const hasProduct = order.items.some((item: any) => 
+            item.productId.toString() === productId
+          );
+          isVerified = hasProduct;
+        }
+      }
+
       const review = await Review.create({
         productId,
+        orderId,
         userId: req.user!.id,
         rating,
         title,
         comment,
+        images: images || [],
+        isVerified,
       });
 
+      // Update product rating and review count
       const reviews = await Review.find({ productId });
       const avgRating = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
 
@@ -690,6 +756,65 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       await review.populate("userId", "firstName lastName");
 
       res.status(201).json({ review });
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Mark review as helpful
+  app.post("/api/reviews/:reviewId/helpful", authenticate, async (req: AuthRequest, res) => {
+    try {
+      const { reviewId } = req.params;
+      
+      const review = await Review.findByIdAndUpdate(
+        reviewId,
+        { $inc: { helpfulCount: 1 } },
+        { new: true }
+      ).populate("userId", "firstName lastName");
+
+      res.json({ review });
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Get user's delivered orders for review
+  app.get("/api/orders/reviewable", authenticate, async (req: AuthRequest, res) => {
+    try {
+      const orders = await Order.find({
+        userId: req.user!.id,
+        status: 'delivered'
+      })
+      .populate('items.productId')
+      .sort({ deliveredAt: -1 })
+      .limit(20);
+
+      // Filter out products already reviewed
+      const reviewableOrders = await Promise.all(
+        orders.map(async (order) => {
+          const reviewableItems = await Promise.all(
+            order.items.map(async (item: any) => {
+              const existingReview = await Review.findOne({
+                productId: item.productId._id,
+                userId: req.user!.id
+              });
+              
+              return {
+                ...item.toObject(),
+                hasReview: !!existingReview,
+                orderId: order._id
+              };
+            })
+          );
+          
+          return {
+            ...order.toObject(),
+            items: reviewableItems
+          };
+        })
+      );
+
+      res.json({ orders: reviewableOrders });
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }

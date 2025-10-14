@@ -26,6 +26,7 @@ import {
 
 export default function SalePage() {
   const [sortBy, setSortBy] = useState("discount");
+  const [page, setPage] = useState(1);
   const [timeLeft, setTimeLeft] = useState({
     hours: 23,
     minutes: 45,
@@ -36,12 +37,18 @@ export default function SalePage() {
   const { data: saleProductsData, isLoading } = useProducts({ 
     sort: sortBy === "discount" ? "discount" : sortBy === "price-low" ? "price" : "createdAt",
     order: sortBy === "price-high" ? "desc" : "asc",
-    limit: 20
+    limit: 20 * page
   });
 
   const saleProducts = saleProductsData?.products?.filter(product => 
     product.discount && product.discount > 0
   ) || [];
+  
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1);
+  };
+  
+  const hasMore = saleProducts.length >= (20 * page);
 
   // Flash sale products (highest discounts)
   const flashSaleProducts = saleProducts
@@ -256,10 +263,15 @@ export default function SalePage() {
               </div>
             )}
 
-            {saleProducts.length >= 20 && (
+            {hasMore && (
               <div className="text-center mt-8">
-                <Button size="lg" variant="outline">
-                  Load More Products
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Loading..." : "Load More Products"}
                 </Button>
               </div>
             )}

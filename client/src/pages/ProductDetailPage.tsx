@@ -12,6 +12,8 @@ import { useProduct, useProducts } from "@/hooks/useProducts";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { ReviewSection } from "@/components/ReviewSection";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProductDetailPage() {
   const { id: slug } = useParams();
@@ -28,6 +30,14 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
+
+  // Fetch reviews
+  const { data: reviewsData, refetch: refetchReviews } = useQuery<{ reviews: any[] }>({
+    queryKey: [`/api/reviews/${product?._id}`],
+    enabled: !!product?._id,
+  });
+
+  const reviews = reviewsData?.reviews || [];
 
   // Get unique sizes and colors from variants
   const sizes = product ? Array.from(new Set(product.variants.map(v => v.size))) : [];
@@ -272,7 +282,7 @@ export default function ProductDetailPage() {
           <Tabs defaultValue="description" className="mb-12">
             <TabsList className="w-full justify-start">
               <TabsTrigger value="description" data-testid="tab-description">Description</TabsTrigger>
-              <TabsTrigger value="reviews" data-testid="tab-reviews">Reviews (128)</TabsTrigger>
+              <TabsTrigger value="reviews" data-testid="tab-reviews">Reviews ({product.reviewCount || 0})</TabsTrigger>
               <TabsTrigger value="size-guide" data-testid="tab-size-guide">Size Guide</TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="mt-6">
@@ -295,9 +305,13 @@ export default function ProductDetailPage() {
               </Card>
             </TabsContent>
             <TabsContent value="reviews" className="mt-6">
-              <Card className="p-6">
-                <p className="text-muted-foreground">Customer reviews will be displayed here. ({product.reviewCount} reviews)</p>
-              </Card>
+              <ReviewSection
+                productId={product._id}
+                reviews={reviews}
+                averageRating={product.rating || 0}
+                totalReviews={product.reviewCount || 0}
+                onReviewSubmit={() => refetchReviews()}
+              />
             </TabsContent>
             <TabsContent value="size-guide" className="mt-6">
               <Card className="p-6">

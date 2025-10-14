@@ -26,18 +26,64 @@ import { useCategories } from "@/hooks/useCategories";
 export default function CategoryPage() {
   const { id: categorySlug } = useParams();
   const [sortBy, setSortBy] = useState("popularity");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
   
   const { data: categoriesData } = useCategories();
   const { data: productsData, isLoading } = useProducts({ 
     category: categorySlug,
-    sort: sortBy === "price-low" ? "price" : sortBy === "price-high" ? "price" : "createdAt",
-    order: sortBy === "price-high" ? "desc" : "asc",
+    limit: 100, // Fetch more products for client-side sorting
   });
 
   const categories = categoriesData?.categories || [];
   const currentCategory = categories.find(cat => cat.slug === categorySlug);
-  const products = productsData?.products || [];
+  let products = productsData?.products || [];
+  
+  // Apply client-side filters
+  products = products.filter(product => {
+    // Price filter
+    if (product.price < priceRange[0] || product.price > priceRange[1]) {
+      return false;
+    }
+    
+    // Brand filter
+    if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
+      return false;
+    }
+    
+    return true;
+  });
+  
+  // Apply client-side sorting
+  products = [...products].sort((a, b) => {
+    switch (sortBy) {
+      case "price-low-high":
+        return a.price - b.price;
+      case "price-high-low":
+        return b.price - a.price;
+      case "rating":
+        return (b.rating || 0) - (a.rating || 0);
+      case "newest":
+        // Sort by _id (MongoDB ObjectId contains timestamp)
+        return b._id.localeCompare(a._id);
+      case "popularity":
+      default:
+        // Popularity = rating * reviewCount (products with more reviews and higher ratings)
+        const popularityA = (a.rating || 0) * (a.reviewCount || 0);
+        const popularityB = (b.rating || 0) * (b.reviewCount || 0);
+        return popularityB - popularityA;
+    }
+  });
+  
+  // Paginate after filtering and sorting
+  const displayedProducts = products.slice(0, 20 * page);
+  
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1);
+  };
+  
+  const hasMore = products.length > displayedProducts.length;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -59,7 +105,7 @@ export default function CategoryPage() {
                 {currentCategory?.name || categorySlug}
               </h1>
               <p className="text-muted-foreground">
-                {isLoading ? "Loading..." : `Showing ${products.length} products`}
+                {isLoading ? "Loading..." : `Showing ${displayedProducts.length} of ${products.length} products`}
               </p>
             </div>
 
@@ -76,7 +122,12 @@ export default function CategoryPage() {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
-                    <FilterSidebar />
+                    <FilterSidebar 
+                      priceRange={priceRange}
+                      onPriceChange={setPriceRange}
+                      selectedBrands={selectedBrands}
+                      onBrandsChange={setSelectedBrands}
+                    />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -99,7 +150,12 @@ export default function CategoryPage() {
           <div className="flex gap-6">
             <aside className="hidden md:block w-64 flex-shrink-0">
               <div className="sticky top-20">
-                <FilterSidebar />
+                <FilterSidebar 
+                  priceRange={priceRange}
+                  onPriceChange={setPriceRange}
+                  selectedBrands={selectedBrands}
+                  onBrandsChange={setSelectedBrands}
+                />
               </div>
             </aside>
 
@@ -110,7 +166,7 @@ export default function CategoryPage() {
                     <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
                   ))}
                 </div>
-              ) : products.length === 0 ? (
+              ) : displayedProducts.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="text-lg font-semibold mb-2">No products found</h3>
                   <p className="text-muted-foreground">Try adjusting your filters or search terms.</p>
@@ -118,7 +174,7 @@ export default function CategoryPage() {
               ) : (
                 <>
                   <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                    {products.map((product) => (
+                    {displayedProducts.map((product) => (
                       <ProductCard 
                         key={product._id} 
                         id={product.slug}
@@ -134,10 +190,16 @@ export default function CategoryPage() {
                     ))}
                   </div>
 
-                  {products.length >= 20 && (
+                  {hasMore && (
                     <div className="mt-8 flex justify-center">
-                      <Button variant="outline" size="lg" data-testid="button-load-more">
-                        Load More Products
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        onClick={handleLoadMore}
+                        disabled={isLoading}
+                        data-testid="button-load-more"
+                      >
+                        {isLoading ? "Loading..." : "Load More Products"}
                       </Button>
                     </div>
                   )}

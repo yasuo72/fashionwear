@@ -3,11 +3,15 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IReview extends Document {
   productId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
+  orderId?: mongoose.Types.ObjectId;
   rating: number;
   title?: string;
   comment: string;
+  images?: string[];
   isVerified: boolean;
+  helpfulCount: number;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const ReviewSchema: Schema = new Schema(
@@ -21,6 +25,10 @@ const ReviewSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    orderId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Order',
     },
     rating: {
       type: Number,
@@ -37,9 +45,17 @@ const ReviewSchema: Schema = new Schema(
       required: true,
       trim: true,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    helpfulCount: {
+      type: Number,
+      default: 0,
     },
   },
   {

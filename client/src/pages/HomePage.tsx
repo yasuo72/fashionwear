@@ -40,7 +40,7 @@ export default function HomePage() {
                   id={category.slug}
                   name={category.name}
                   image={category.image}
-                  productCount={0} // We'll calculate this later
+                  productCount={category.productCount || 0}
                 />
               ))
             )}

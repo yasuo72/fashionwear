@@ -7,6 +7,8 @@ export interface Category {
   description: string;
   image: string;
   isActive: boolean;
+  productCount?: number;
+  parentId?: string;
 }
 
 export function useCategories() {

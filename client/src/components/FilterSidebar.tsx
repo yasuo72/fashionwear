@@ -9,8 +9,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { useBrands } from "@/hooks/useBrands";
 
-const brands = ["Nike", "Adidas", "Zara", "H&M", "Puma", "Levi's"];
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 const colors = [
   { name: "Black", hex: "#000000" },
@@ -21,16 +21,33 @@ const colors = [
   { name: "Yellow", hex: "#F59E0B" },
 ];
 
-export function FilterSidebar() {
-  const [priceRange, setPriceRange] = useState([0, 500]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+interface FilterSidebarProps {
+  priceRange?: [number, number];
+  onPriceChange?: (range: [number, number]) => void;
+  selectedBrands?: string[];
+  onBrandsChange?: (brands: string[]) => void;
+}
+
+export function FilterSidebar({ 
+  priceRange: externalPriceRange,
+  onPriceChange,
+  selectedBrands: externalSelectedBrands,
+  onBrandsChange
+}: FilterSidebarProps = {}) {
+  const { data: brandsData } = useBrands();
+  const brands = brandsData?.brands || [];
+  
+  const [priceRange, setPriceRange] = useState(externalPriceRange || [0, 10000]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(externalSelectedBrands || []);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   const toggleBrand = (brand: string) => {
-    setSelectedBrands(prev =>
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
-    );
+    const newBrands = selectedBrands.includes(brand) 
+      ? selectedBrands.filter(b => b !== brand) 
+      : [...selectedBrands, brand];
+    setSelectedBrands(newBrands);
+    onBrandsChange?.(newBrands);
   };
 
   const toggleSize = (size: string) => {
@@ -45,11 +62,19 @@ export function FilterSidebar() {
     );
   };
 
+  const handlePriceChange = (value: number[]) => {
+    const newRange: [number, number] = [value[0], value[1]];
+    setPriceRange(newRange);
+    onPriceChange?.(newRange);
+  };
+
   const clearFilters = () => {
-    setPriceRange([0, 500]);
+    setPriceRange([0, 10000]);
     setSelectedBrands([]);
     setSelectedSizes([]);
     setSelectedColors([]);
+    onPriceChange?.([0, 10000]);
+    onBrandsChange?.([]);
   };
 
   return (
@@ -68,15 +93,15 @@ export function FilterSidebar() {
             <div className="px-2 pt-2 pb-4">
               <Slider
                 value={priceRange}
-                onValueChange={setPriceRange}
-                max={500}
-                step={10}
+                onValueChange={handlePriceChange}
+                max={10000}
+                step={100}
                 className="mb-4"
                 data-testid="slider-price-range"
               />
               <div className="flex justify-between text-sm">
-                <span data-testid="text-price-min">${priceRange[0]}</span>
-                <span data-testid="text-price-max">${priceRange[1]}</span>
+                <span data-testid="text-price-min">₹{priceRange[0]}</span>
+                <span data-testid="text-price-max">₹{priceRange[1]}</span>
               </div>
             </div>
           </AccordionContent>
