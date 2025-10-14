@@ -156,11 +156,56 @@ export function Navbar() {
                 data-testid="input-mobile-search"
               />
             </form>
+            
+            <div className="flex flex-col space-y-2 px-2">
+              <Link 
+                href="/category/men" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Men
+              </Link>
+              <Link 
+                href="/category/women" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Women
+              </Link>
+              <Link 
+                href="/category/kids" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Kids
+              </Link>
+              <Link 
+                href="/category/accessories" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Accessories
+              </Link>
+              <Link 
+                href="/blog" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blog
+              </Link>
+              <Link 
+                href="/sales" 
+                className="px-4 py-3 rounded-md hover:bg-accent transition-colors text-sm font-medium text-destructive"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sale
+              </Link>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="border-t bg-card">
+      <div className="border-t bg-card hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-12 items-center justify-center gap-8 text-sm">
             <Link href="/category/men" className="hover-elevate px-3 py-2 rounded-md transition-colors" data-testid="link-category-men">
