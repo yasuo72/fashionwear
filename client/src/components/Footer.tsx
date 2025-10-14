@@ -56,7 +56,14 @@ export function Footer() {
         </div>
 
         <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© 2024 FashionHub. All rights reserved.</p>
+          <div className="flex flex-col items-center md:items-start">
+            <p className="text-sm text-muted-foreground">
+              © 2024 FashionFusion. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground/40 mt-1">
+              Crafted with ❤️ by Rohit Singh
+            </p>
+          </div>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms of Service</Link>

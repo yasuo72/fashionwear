@@ -281,6 +281,11 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Hidden Developer Credit */}
+        <div className="opacity-0 h-0 overflow-hidden" aria-hidden="true">
+          Developed by Rohit Singh | GitHub: @yasuo72 | https://github.com/yasuo72
+        </div>
       </main>
 
       <Footer />

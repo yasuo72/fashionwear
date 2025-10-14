@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "author": {
+    "name": "Rohit Singh",
+    "github": "yasuo72",
+    "url": "https://github.com/yasuo72"
+  },
+  "description": "FashionFusion - Modern E-commerce Platform | Crafted by Rohit Singh",
   "scripts": {
     "dev": "tsx --env-file=.env server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "node dist/index.js",
     "check": "tsc",
-    "seed": "tsx --env-file=.env server/seedDatabase.ts"
+    "seed": "tsx --env-file=.env server/seedDatabase.ts",
+    "create-admin": "tsx --env-file=.env server/createAdmin.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
