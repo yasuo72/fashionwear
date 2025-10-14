@@ -14,6 +14,7 @@ import { useCreateOrder } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { RazorpayPayment } from "@/components/RazorpayPayment";
 import {
   Dialog,
   DialogContent,
@@ -33,8 +34,9 @@ export default function CheckoutPage() {
   const createOrder = useCreateOrder();
   
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<any>(null);
   
   // Card payment form state
   const [cardDetails, setCardDetails] = useState({
@@ -193,57 +195,25 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePlaceOrder = async () => {
-    if (!selectedAddressId) {
-      toast({
-        title: "Error",
-        description: "Please select a delivery address",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleRazorpaySuccess = async (razorpayDetails: any) => {
+    setPaymentDetails(razorpayDetails);
+    await createOrderWithPayment(razorpayDetails);
+  };
 
-    if (cartItems.length === 0) {
-      toast({
-        title: "Error",
-        description: "Your cart is empty",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleRazorpayError = (error: any) => {
+    toast({
+      title: "Payment Failed",
+      description: error.message || "Payment was not completed",
+      variant: "destructive",
+    });
+    setIsPlacingOrder(false);
+  };
 
-    // Validate card details if card payment is selected
-    if (paymentMethod === "card") {
-      if (!validateCardDetails()) {
-        return;
-      }
-    }
-
-    setIsPlacingOrder(true);
-
+  const createOrderWithPayment = async (razorpayDetails?: any) => {
     try {
       const selectedAddress = addresses.find(a => a._id === selectedAddressId);
       if (!selectedAddress) {
         throw new Error("Selected address not found");
-      }
-
-      // Simulate card payment processing
-      if (paymentMethod === "card") {
-        toast({
-          title: "Processing Payment",
-          description: "Please wait while we process your card payment...",
-        });
-        
-        // Simulate payment processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // In a real app, you would call a payment gateway API here
-        // For demo purposes, we'll simulate a successful payment
-        const paymentSuccess = true; // In real app: await processCardPayment(cardDetails, total)
-        
-        if (!paymentSuccess) {
-          throw new Error("Payment failed. Please check your card details and try again.");
-        }
       }
 
       const orderData = {
@@ -266,6 +236,11 @@ export default function CheckoutPage() {
           phone: selectedAddress.phone,
         },
         paymentMethod,
+        ...(razorpayDetails && {
+          razorpayOrderId: razorpayDetails.razorpayOrderId,
+          razorpayPaymentId: razorpayDetails.razorpayPaymentId,
+          razorpaySignature: razorpayDetails.razorpaySignature,
+        }),
         subtotal,
         shipping,
         tax,
@@ -277,10 +252,71 @@ export default function CheckoutPage() {
       
       toast({
         title: "Success!",
-        description: `Order ${result.order.orderNumber} placed successfully. ${paymentMethod === 'card' ? 'Payment confirmed!' : ''}`,
+        description: `Order ${result.order.orderNumber} placed successfully!`,
       });
 
-      // Clear card details after successful order
+      setLocation("/orders");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to place order",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!selectedAddressId) {
+      toast({
+        title: "Error",
+        description: "Please select a delivery address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast({
+        title: "Error",
+        description: "Your cart is empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // For Razorpay, the payment button will handle the flow
+    if (paymentMethod === "razorpay") {
+      return; // RazorpayPayment component handles this
+    }
+
+    // Validate card details if card payment is selected
+    if (paymentMethod === "card") {
+      if (!validateCardDetails()) {
+        return;
+      }
+    }
+
+    setIsPlacingOrder(true);
+
+    try {
+      // Simulate card payment processing
+      if (paymentMethod === "card") {
+        toast({
+          title: "Processing Payment",
+          description: "Please wait while we process your card payment...",
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const paymentSuccess = true;
+        
+        if (!paymentSuccess) {
+          throw new Error("Payment failed. Please check your card details and try again.");
+        }
+      }
+
+      await createOrderWithPayment();
+      
       if (paymentMethod === "card") {
         setCardDetails({
           cardNumber: "",
@@ -289,8 +325,6 @@ export default function CheckoutPage() {
           cvv: "",
         });
       }
-
-      setLocation("/orders");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -506,16 +540,16 @@ export default function CheckoutPage() {
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-4 border rounded-lg hover-elevate cursor-pointer">
-                      <RadioGroupItem value="card" id="payment-card" data-testid="radio-payment-card" />
-                      <Label htmlFor="payment-card" className="flex-1 cursor-pointer">
-                        Credit/Debit Card
+                      <RadioGroupItem value="razorpay" id="payment-razorpay" data-testid="radio-payment-razorpay" />
+                      <Label htmlFor="payment-razorpay" className="flex-1 cursor-pointer">
+                        Razorpay (UPI, Cards, Netbanking)
                       </Label>
                     </div>
 
                     <div className="flex items-center space-x-3 p-4 border rounded-lg hover-elevate cursor-pointer">
-                      <RadioGroupItem value="upi" id="payment-upi" data-testid="radio-payment-upi" />
-                      <Label htmlFor="payment-upi" className="flex-1 cursor-pointer">
-                        UPI Payment
+                      <RadioGroupItem value="card" id="payment-card" data-testid="radio-payment-card" />
+                      <Label htmlFor="payment-card" className="flex-1 cursor-pointer">
+                        Credit/Debit Card
                       </Label>
                     </div>
 
@@ -621,15 +655,27 @@ export default function CheckoutPage() {
                   <span data-testid="text-order-total">₹{total.toFixed(0)}</span>
                 </div>
 
-                <Button 
-                  className="w-full" 
-                  size="lg" 
-                  data-testid="button-place-order"
-                  onClick={handlePlaceOrder}
-                  disabled={isPlacingOrder || !selectedAddressId || cartItems.length === 0}
-                >
-                  {isPlacingOrder ? "Placing Order..." : "Place Order"}
-                </Button>
+                {paymentMethod === "razorpay" ? (
+                  <RazorpayPayment
+                    amount={total}
+                    orderData={{
+                      shippingAddress: addresses.find(a => a._id === selectedAddressId),
+                      items: cartItems
+                    }}
+                    onSuccess={handleRazorpaySuccess}
+                    onError={handleRazorpayError}
+                  />
+                ) : (
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    data-testid="button-place-order"
+                    onClick={handlePlaceOrder}
+                    disabled={isPlacingOrder || !selectedAddressId || cartItems.length === 0}
+                  >
+                    {isPlacingOrder ? "Placing Order..." : "Place Order"}
+                  </Button>
+                )}
 
                 <p className="text-xs text-muted-foreground text-center mt-4">
                   By placing this order, you agree to our Terms & Conditions

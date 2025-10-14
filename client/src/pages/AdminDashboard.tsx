@@ -72,9 +72,12 @@ import { ProductManagement } from "@/components/admin/ProductManagement";
 import { OrderManagement } from "@/components/admin/OrderManagement";
 import { CategoryManagement } from "@/components/admin/CategoryManagement";
 import { CouponManagement } from "@/components/admin/CouponManagement";
+import { SalesAnalytics } from "@/components/admin/SalesAnalytics";
+import { useQuery } from "@tanstack/react-query";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, id: "dashboard" },
+  { title: "Sales Analytics", icon: TrendingUp, id: "sales" },
   { title: "Products", icon: Package, id: "products" },
   { title: "Categories", icon: FolderTree, id: "categories" },
   { title: "Orders", icon: ShoppingCart, id: "orders" },
@@ -111,6 +114,13 @@ export default function AdminDashboard() {
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [timeRange, setTimeRange] = useState("7days");
+  
+  // Sales Analytics
+  const { data: salesData, isLoading: salesLoading, refetch: refetchSales } = useQuery<any>({
+    queryKey: [`/api/admin/sales-analytics?timeRange=${timeRange}`],
+    enabled: activeTab === "sales",
+  });
   
   const [productForm, setProductForm] = useState({
     name: "",
@@ -544,6 +554,24 @@ export default function AdminDashboard() {
                   </Card>
                 </div>
               </>
+            )}
+
+            {activeTab === "sales" && (
+              <SalesAnalytics
+                stats={{
+                  totalRevenue: salesData?.totalRevenue || 0,
+                  totalOrders: salesData?.totalOrders || 0,
+                  averageOrderValue: salesData?.averageOrderValue || 0,
+                  totalCustomers: salesData?.totalCustomers || 0,
+                  totalProducts: salesData?.totalProducts || 0,
+                  revenueGrowth: salesData?.revenueGrowth || 0,
+                  ordersGrowth: salesData?.ordersGrowth || 0,
+                  topSellingProducts: salesData?.topSellingProducts || [],
+                  recentOrders: salesData?.recentOrders || []
+                }}
+                isLoading={salesLoading}
+                onRefresh={() => refetchSales()}
+              />
             )}
 
             {activeTab === "products" && (

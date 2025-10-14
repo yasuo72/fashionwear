@@ -554,6 +554,63 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     }
   });
 
+  // ==================== PAYMENT ROUTES ====================
+
+  // Create Razorpay order
+  app.post("/api/payment/create-order", authenticate, async (req: AuthRequest, res) => {
+    try {
+      const Razorpay = (await import('razorpay')).default;
+      
+      const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID!,
+        key_secret: process.env.RAZORPAY_KEY_SECRET!,
+      });
+
+      const { amount, currency = 'INR' } = req.body;
+
+      const options = {
+        amount: amount * 100, // amount in smallest currency unit (paise)
+        currency,
+        receipt: `receipt_${Date.now()}`,
+        payment_capture: 1,
+      };
+
+      const order = await razorpay.orders.create(options);
+      res.json({ order });
+    } catch (error) {
+      console.error('Razorpay order creation error:', error);
+      res.status(500).json({ error: "Failed to create payment order" });
+    }
+  });
+
+  // Verify Razorpay payment
+  app.post("/api/payment/verify", authenticate, async (req: AuthRequest, res) => {
+    try {
+      const crypto = await import('crypto');
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+      const sign = razorpay_order_id + "|" + razorpay_payment_id;
+      const expectedSign = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(sign.toString())
+        .digest("hex");
+
+      if (razorpay_signature === expectedSign) {
+        res.json({ 
+          success: true, 
+          message: "Payment verified successfully",
+          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id
+        });
+      } else {
+        res.status(400).json({ success: false, message: "Invalid signature" });
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ error: "Payment verification failed" });
+    }
+  });
+
   // ==================== ORDER ROUTES ====================
 
   // Get user orders
@@ -589,6 +646,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         items,
         shippingAddress,
         paymentMethod,
+        paymentId,
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
         subtotal,
         shipping,
         tax,
@@ -604,14 +665,20 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         items,
         shippingAddress,
         paymentMethod,
+        paymentId: paymentId || razorpayPaymentId,
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
         subtotal,
         shipping,
         tax,
         discount,
         total,
-        status: "pending",
+        status: paymentMethod === 'razorpay' ? 'confirmed' : 'pending',
+        paymentStatus: paymentMethod === 'razorpay' ? 'paid' : 'pending',
       });
 
+      // Clear cart after order
       await Cart.findOneAndUpdate(
         { userId: req.user!.id },
         { items: [] }
@@ -619,6 +686,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
 
       res.status(201).json({ order });
     } catch (error) {
+      console.error('Order creation error:', error);
       res.status(500).json({ error: "Server error" });
     }
   });
@@ -911,6 +979,117 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       res.json(stats);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Sales Analytics
+  app.get("/api/admin/sales-analytics", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { timeRange = '7days' } = req.query;
+      
+      // Calculate date range
+      const now = new Date();
+      let startDate = new Date();
+      
+      switch (timeRange) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case '7days':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case '30days':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case '90days':
+          startDate.setDate(now.getDate() - 90);
+          break;
+        case 'year':
+          startDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+
+      // Total revenue and orders
+      const orders = await Order.find({
+        createdAt: { $gte: startDate },
+        status: { $ne: 'cancelled' }
+      });
+
+      const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+      const totalOrders = orders.length;
+      const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+      // Total customers
+      const totalCustomers = await User.countDocuments({ role: 'user' });
+      const totalProducts = await Product.countDocuments({ isActive: true });
+
+      // Growth calculations (compare with previous period)
+      const previousStartDate = new Date(startDate);
+      previousStartDate.setTime(previousStartDate.getTime() - (now.getTime() - startDate.getTime()));
+      
+      const previousOrders = await Order.find({
+        createdAt: { $gte: previousStartDate, $lt: startDate },
+        status: { $ne: 'cancelled' }
+      });
+
+      const previousRevenue = previousOrders.reduce((sum, order) => sum + order.total, 0);
+      const revenueGrowth = previousRevenue > 0 
+        ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 
+        : 0;
+      const ordersGrowth = previousOrders.length > 0
+        ? ((totalOrders - previousOrders.length) / previousOrders.length) * 100
+        : 0;
+
+      // Top selling products
+      const productSales = await Order.aggregate([
+        { $match: { createdAt: { $gte: startDate }, status: { $ne: 'cancelled' } } },
+        { $unwind: '$items' },
+        {
+          $group: {
+            _id: '$items.productId',
+            sales: { $sum: '$items.quantity' },
+            revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+          }
+        },
+        { $sort: { revenue: -1 } },
+        { $limit: 5 },
+        {
+          $lookup: {
+            from: 'products',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'product'
+          }
+        },
+        { $unwind: '$product' }
+      ]);
+
+      const topSellingProducts = productSales.map(item => ({
+        name: item.product.name,
+        sales: item.sales,
+        revenue: item.revenue
+      }));
+
+      // Recent orders
+      const recentOrders = await Order.find()
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .select('orderNumber total status createdAt');
+
+      res.json({
+        totalRevenue,
+        totalOrders,
+        averageOrderValue,
+        totalCustomers,
+        totalProducts,
+        revenueGrowth: Math.round(revenueGrowth * 10) / 10,
+        ordersGrowth: Math.round(ordersGrowth * 10) / 10,
+        topSellingProducts,
+        recentOrders
+      });
+    } catch (error) {
+      console.error('Sales analytics error:', error);
+      res.status(500).json({ message: "Failed to fetch sales analytics" });
     }
   });
 

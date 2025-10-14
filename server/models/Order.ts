@@ -24,12 +24,17 @@ export interface IOrder extends Document {
     phone: string;
   };
   paymentMethod: string;
+  paymentId?: string;
+  paymentStatus?: 'pending' | 'paid' | 'failed';
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
   subtotal: number;
   shipping: number;
   tax: number;
   discount: number;
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   trackingNumber?: string;
   notes?: string;
   createdAt: Date;
@@ -99,6 +104,23 @@ const OrderSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    paymentId: {
+      type: String,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending',
+    },
+    razorpayOrderId: {
+      type: String,
+    },
+    razorpayPaymentId: {
+      type: String,
+    },
+    razorpaySignature: {
+      type: String,
+    },
     subtotal: {
       type: Number,
       required: true,
@@ -126,7 +148,7 @@ const OrderSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
       default: 'pending',
     },
     trackingNumber: {
