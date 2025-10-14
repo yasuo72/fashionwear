@@ -262,8 +262,10 @@ export function ProductManagement({
                     <Input
                       id="price"
                       type="number"
-                      value={productForm.price}
-                      onChange={(e) => setProductForm({ ...productForm, price: parseFloat(e.target.value) || 0 })}
+                      min="0"
+                      step="0.01"
+                      value={productForm.price || ''}
+                      onChange={(e) => setProductForm({ ...productForm, price: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
                       placeholder="0.00"
                     />
                   </div>
@@ -272,8 +274,10 @@ export function ProductManagement({
                     <Input
                       id="originalPrice"
                       type="number"
-                      value={productForm.originalPrice}
-                      onChange={(e) => setProductForm({ ...productForm, originalPrice: parseFloat(e.target.value) || 0 })}
+                      min="0"
+                      step="0.01"
+                      value={productForm.originalPrice || ''}
+                      onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
                       placeholder="0.00"
                     />
                   </div>
@@ -285,8 +289,10 @@ export function ProductManagement({
                     <Input
                       id="discount"
                       type="number"
-                      value={productForm.discount}
-                      onChange={(e) => setProductForm({ ...productForm, discount: parseInt(e.target.value) || 0 })}
+                      min="0"
+                      max="100"
+                      value={productForm.discount || ''}
+                      onChange={(e) => setProductForm({ ...productForm, discount: e.target.value === '' ? 0 : parseInt(e.target.value) })}
                       placeholder="0"
                     />
                   </div>
@@ -390,8 +396,9 @@ export function ProductManagement({
                       />
                       <Input
                         type="number"
-                        value={variant.stock}
-                        onChange={(e) => updateVariant(index, 'stock', parseInt(e.target.value) || 0)}
+                        min="0"
+                        value={variant.stock || ''}
+                        onChange={(e) => updateVariant(index, 'stock', e.target.value === '' ? 0 : parseInt(e.target.value))}
                         placeholder="Stock"
                       />
                       <Button
