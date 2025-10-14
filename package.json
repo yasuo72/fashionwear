@@ -20,7 +20,8 @@
     "create-subcategories": "tsx --env-file=.env server/createSubcategories.ts",
     "reassign-products": "tsx --env-file=.env server/reassignProductsToSubcategories.ts",
     "clear-products": "tsx --env-file=.env server/clearProducts.ts",
-    "create-admin": "tsx --env-file=.env server/createAdmin.ts"
+    "create-admin": "tsx --env-file=.env server/createAdmin.ts",
+    "add-men-product": "tsx --env-file=.env server/addMenProduct.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

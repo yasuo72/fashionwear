@@ -67,7 +67,7 @@ export default function CheckoutPage() {
 
   // Calculate totals
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const shipping = subtotal > 4149 ? 0 : 830;
+  const shipping = subtotal >= 499 ? 0 : 40;
   const tax = subtotal * 0.08;
   const discount = 0;
   const total = subtotal + shipping + tax - discount;

@@ -24,7 +24,7 @@ export default function ShippingPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="p-4 border rounded-lg">
                     <h3 className="font-semibold mb-2">Standard Shipping</h3>
-                    <p className="text-sm text-muted-foreground mb-2">₹830 (3-7 business days)</p>
+                    <p className="text-sm text-muted-foreground mb-2">₹40 (3-7 business days)</p>
                     <p className="text-sm text-muted-foreground">Available across India</p>
                   </div>
                   
@@ -33,7 +33,7 @@ export default function ShippingPage() {
                       Free Shipping
                       <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">Popular</span>
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-2">On orders above ₹4,149</p>
+                    <p className="text-sm text-muted-foreground mb-2">On orders above ₹499</p>
                     <p className="text-sm text-muted-foreground">3-7 business days delivery</p>
                   </div>
                 </div>

@@ -17,13 +17,13 @@ export default function ReturnsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <RotateCcw className="h-5 w-5" />
-                  30-Day Return Policy
+                  7-Day Return Policy
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
                   We want you to be completely satisfied with your purchase. If you're not happy with your order, 
-                  you can return it within 30 days of delivery for a full refund or exchange.
+                  you can return it within 7 days of delivery for a full refund or exchange.
                 </p>
                 <div className="bg-primary/5 p-4 rounded-lg">
                   <p className="font-semibold mb-2">✓ Free Returns on All Orders</p>
@@ -46,7 +46,7 @@ export default function ReturnsPage() {
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                   <li>Unused and in the same condition as received</li>
                   <li>In original packaging with all tags attached</li>
-                  <li>Returned within 30 days of delivery</li>
+                  <li>Returned within 7 days of delivery</li>
                   <li>Include the original invoice</li>
                   <li>No signs of wear, washing, or alterations</li>
                 </ul>

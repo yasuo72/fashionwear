@@ -109,23 +109,23 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="bg-card py-12">
+        <section className="bg-card py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="p-6 text-center">
-                <div className="text-4xl mb-4">🚚</div>
-                <h3 className="font-semibold mb-2">Free Shipping</h3>
-                <p className="text-sm text-muted-foreground">On orders over $50</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-4 text-center">
+                <div className="text-3xl mb-2">🚚</div>
+                <h3 className="font-semibold text-sm mb-1">Free Shipping</h3>
+                <p className="text-xs text-muted-foreground">On orders over ₹499</p>
               </Card>
-              <Card className="p-6 text-center">
-                <div className="text-4xl mb-4">🔄</div>
-                <h3 className="font-semibold mb-2">Easy Returns</h3>
-                <p className="text-sm text-muted-foreground">30-day return policy</p>
+              <Card className="p-4 text-center">
+                <div className="text-3xl mb-2">🔄</div>
+                <h3 className="font-semibold text-sm mb-1">Easy Returns</h3>
+                <p className="text-xs text-muted-foreground">7-day return policy</p>
               </Card>
-              <Card className="p-6 text-center">
-                <div className="text-4xl mb-4">💳</div>
-                <h3 className="font-semibold mb-2">Secure Payment</h3>
-                <p className="text-sm text-muted-foreground">100% secure transactions</p>
+              <Card className="p-4 text-center">
+                <div className="text-3xl mb-2">💳</div>
+                <h3 className="font-semibold text-sm mb-1">Secure Payment</h3>
+                <p className="text-xs text-muted-foreground">100% secure transactions</p>
               </Card>
             </div>
           </div>
