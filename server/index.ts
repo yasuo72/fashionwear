@@ -2,6 +2,8 @@
 import { config } from "dotenv";
 config();
 
+// Railway deployment fix - listen on 0.0.0.0
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -77,12 +79,13 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
   
-  server.listen({
-    port,
-    host,
-  }, () => {
+  // Use 0.0.0.0 in production or if RAILWAY_ENVIRONMENT is set
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
+  const host = isProduction ? '0.0.0.0' : 'localhost';
+  
+  server.listen(port, host, () => {
     log(`serving on ${host}:${port}`);
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 })();
