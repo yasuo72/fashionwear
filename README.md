@@ -20,58 +20,50 @@
 
 ## 📸 Screenshots
 
-<div align="center">
-
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto;">
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">🏠 Home Page</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20013214.png" alt="Home Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">🛍️ Product Listing</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20013347.png" alt="Product Listing" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">📱 Product Details</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030135.png" alt="Product Details" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">🛒 Shopping Cart</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030150.png" alt="Shopping Cart" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">👤 User Profile</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030215.png" alt="User Profile" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">📊 Admin Dashboard</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030229.png" alt="Admin Dashboard" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">💝 Wishlist Page</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030337.png" alt="Wishlist Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-<div>
-<h4 style="margin-bottom: 10px; text-align: center;">🔐 Login Page</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030438.png" alt="Login Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-</div>
-
-<div align="center" style="margin-top: 20px;">
-<h4>📝 Blog Page</h4>
-<img src="./screenshots/Screenshot%202025-10-16%20030529.png" alt="Blog Page" style="width: 60%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
-</div>
-
-</div>
+<table>
+  <tr>
+    <td width="25%" align="center">
+      <b>🏠 Home Page</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20013214.png" width="100%" alt="Home Page"/>
+    </td>
+    <td width="25%" align="center">
+      <b>🛍️ Product Listing</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20013347.png" width="100%" alt="Product Listing"/>
+    </td>
+    <td width="25%" align="center">
+      <b>📱 Product Details</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030135.png" width="100%" alt="Product Details"/>
+    </td>
+    <td width="25%" align="center">
+      <b>🛒 Shopping Cart</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030150.png" width="100%" alt="Shopping Cart"/>
+    </td>
+  </tr>
+  <tr>
+    <td width="25%" align="center">
+      <b>👤 User Profile</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030215.png" width="100%" alt="User Profile"/>
+    </td>
+    <td width="25%" align="center">
+      <b>📊 Admin Dashboard</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030229.png" width="100%" alt="Admin Dashboard"/>
+    </td>
+    <td width="25%" align="center">
+      <b>💝 Wishlist Page</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030337.png" width="100%" alt="Wishlist Page"/>
+    </td>
+    <td width="25%" align="center">
+      <b>🔐 Login Page</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030438.png" width="100%" alt="Login Page"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" align="center">
+      <b>📝 Blog Page</b><br/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030529.png" width="60%" alt="Blog Page"/>
+    </td>
+  </tr>
+</table>
 
 ---
 
