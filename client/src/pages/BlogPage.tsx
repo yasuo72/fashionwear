@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -18,14 +18,16 @@ import {
   Eye,
   ArrowRight,
   Sparkles,
-  Filter
+  Filter,
+  Loader2,
+  Newspaper
 } from "lucide-react";
 import { Link } from "wouter";
 
 // Mock blog data
 const blogPosts = [
   {
-    id: 1,
+    id: "1",
     title: "10 Must-Have Fashion Trends for 2025",
     excerpt: "Discover the hottest fashion trends that will dominate the runway and streets in 2025. From sustainable fabrics to bold colors...",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=500&fit=crop",
@@ -39,7 +41,7 @@ const blogPosts = [
     tags: ["Fashion", "Trends", "2025", "Style"]
   },
   {
-    id: 2,
+    id: "2",
     title: "The Ultimate Guide to Sustainable Fashion",
     excerpt: "Learn how to build a sustainable wardrobe without compromising on style. Tips for eco-friendly shopping and ethical brands...",
     image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=500&fit=crop",
@@ -53,7 +55,7 @@ const blogPosts = [
     tags: ["Sustainable", "Eco-Friendly", "Green Fashion"]
   },
   {
-    id: 3,
+    id: "3",
     title: "How to Style Oversized Blazers Like a Pro",
     excerpt: "Master the art of wearing oversized blazers with our expert styling tips. From casual to formal looks...",
     image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=500&fit=crop",
@@ -67,7 +69,7 @@ const blogPosts = [
     tags: ["Styling", "Blazers", "Fashion Tips"]
   },
   {
-    id: 4,
+    id: "4",
     title: "Seasonal Color Palettes: Fall/Winter 2024",
     excerpt: "Explore the most stunning color combinations for the upcoming season. From warm earth tones to vibrant jewel colors...",
     image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&h=500&fit=crop",
@@ -81,7 +83,7 @@ const blogPosts = [
     tags: ["Colors", "Seasonal", "Fall", "Winter"]
   },
   {
-    id: 5,
+    id: "5",
     title: "Building a Capsule Wardrobe: Essentials Guide",
     excerpt: "Simplify your closet with our comprehensive guide to creating a versatile capsule wardrobe that works for every occasion...",
     image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&h=500&fit=crop",
@@ -95,7 +97,7 @@ const blogPosts = [
     tags: ["Capsule Wardrobe", "Minimalism", "Essentials"]
   },
   {
-    id: 6,
+    id: "6",
     title: "Accessorizing 101: Elevate Your Outfit",
     excerpt: "Transform any basic outfit into a statement look with the right accessories. Learn the dos and don'ts...",
     image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=800&h=500&fit=crop",
@@ -112,10 +114,34 @@ const blogPosts = [
 
 const categories = ["All", "Trends", "Style Tips", "Sustainability", "Wardrobe", "Accessories"];
 
+interface NewsArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  author: string;
+  date: string;
+  readTime: string;
+  views: number;
+  likes: number;
+  featured: boolean;
+  tags: string[];
+  source?: string;
+  url?: string;
+}
+
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [savedPosts, setSavedPosts] = useState<number[]>([]);
+  const [savedPosts, setSavedPosts] = useState<string[]>([]);
+  const [allPosts, setAllPosts] = useState<NewsArticle[]>([...blogPosts]);
+  const [displayedPosts, setDisplayedPosts] = useState<NewsArticle[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
+  const POSTS_PER_PAGE = 6;
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -128,7 +154,7 @@ export default function BlogPage() {
   const featuredPosts = blogPosts.filter(post => post.featured);
   const trendingPosts = [...blogPosts].sort((a, b) => b.views - a.views).slice(0, 5);
 
-  const toggleSave = (postId: number) => {
+  const toggleSave = (postId: string) => {
     setSavedPosts(prev => 
       prev.includes(postId) 
         ? prev.filter(id => id !== postId)

@@ -13,13 +13,24 @@ import {
   Bookmark,
   Eye,
   ArrowLeft,
+  ArrowRight,
   Facebook,
   Twitter,
   Linkedin,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Instagram,
+  MessageCircle,
+  Send,
+  Play,
+  Volume2,
+  VolumeX,
+  Maximize,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
 import { Link, useParams } from "wouter";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function BlogPostPage() {
@@ -28,15 +39,32 @@ export default function BlogPostPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [likes, setLikes] = useState(342);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [readingProgress, setReadingProgress] = useState(0);
 
   // Mock blog post data (in real app, fetch from API)
   const post = {
     id: 1,
     title: "10 Must-Have Fashion Trends for 2025",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&h=600&fit=crop",
+    gallery: [
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=600&fit=crop"
+    ],
+    video: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual fashion video
     category: "Trends",
     author: "Priya Sharma",
     authorBio: "Fashion Editor & Style Consultant with 10+ years of experience",
+    authorImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    authorSocial: {
+      instagram: "https://instagram.com/priyasharma",
+      twitter: "https://twitter.com/priyasharma",
+      linkedin: "https://linkedin.com/in/priyasharma"
+    },
     date: "2024-10-10",
     readTime: "5 min read",
     views: 12500,
@@ -100,12 +128,57 @@ export default function BlogPostPage() {
     }
   ];
 
+  // Reading progress tracker
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+      const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
+      setReadingProgress(Math.min(progress, 100));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes(prev => isLiked ? prev - 1 : prev + 1);
   };
 
   const handleShare = (platform: string) => {
+    const url = window.location.href;
+    const text = post.title;
+    
+    let shareUrl = '';
+    switch(platform) {
+      case 'Facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'Twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        break;
+      case 'LinkedIn':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        break;
+      case 'WhatsApp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+        break;
+      case 'Instagram':
+        // Instagram doesn't support direct sharing via URL
+        navigator.clipboard.writeText(url);
+        toast({
+          title: "Link Copied!",
+          description: "Paste this link in your Instagram story or bio",
+        });
+        return;
+    }
+    
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+    
     toast({
       title: "Shared!",
       description: `Article shared on ${platform}`,
@@ -120,19 +193,72 @@ export default function BlogPostPage() {
     });
   };
 
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % post.gallery.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + post.gallery.length) % post.gallery.length);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Reading Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-muted z-50">
+        <div 
+          className="h-full bg-gradient-to-r from-primary via-purple-500 to-pink-500 transition-all duration-300"
+          style={{ width: `${readingProgress}%` }}
+        />
+      </div>
+
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Image */}
-        <div className="relative h-[60vh] overflow-hidden">
+        {/* Hero Image Gallery */}
+        <div className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] overflow-hidden group">
           <img 
-            src={post.image} 
+            src={post.gallery[currentImageIndex]} 
             alt={post.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-opacity duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
+          
+          {/* Gallery Navigation */}
+          {post.gallery.length > 1 && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={nextImage}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+              
+              {/* Gallery Indicators */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {post.gallery.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentImageIndex 
+                        ? 'bg-white w-8' 
+                        : 'bg-white/50 hover:bg-white/75'
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Content */}
@@ -156,37 +282,67 @@ export default function BlogPostPage() {
               </h1>
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" />
-                  </div>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 sm:gap-6 text-sm text-muted-foreground mb-6">
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={post.authorImage} 
+                    alt={post.author}
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-primary/20"
+                  />
                   <div>
                     <div className="font-medium text-foreground">{post.author}</div>
                     <div className="text-xs">{post.authorBio}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <a 
+                        href={post.authorSocial.instagram} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition-colors"
+                      >
+                        <Instagram className="h-3 w-3" />
+                      </a>
+                      <a 
+                        href={post.authorSocial.twitter} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition-colors"
+                      >
+                        <Twitter className="h-3 w-3" />
+                      </a>
+                      <a 
+                        href={post.authorSocial.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition-colors"
+                      >
+                        <Linkedin className="h-3 w-3" />
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <Separator orientation="vertical" className="h-10" />
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {new Date(post.date).toLocaleDateString('en-US', { 
-                    month: 'long', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                  })}
-                </span>
-                <span className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {post.readTime}
-                </span>
-                <span className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  {post.views.toLocaleString()} views
-                </span>
+                <Separator orientation="vertical" className="hidden sm:block h-12" />
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(post.date).toLocaleDateString('en-US', { 
+                      month: 'long', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    {post.readTime}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    {post.views.toLocaleString()} views
+                  </span>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 mb-8 pb-8 border-b">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8 pb-8 border-b">
                 <Button 
                   variant={isLiked ? "default" : "outline"}
                   onClick={handleLike}
@@ -214,14 +370,39 @@ export default function BlogPostPage() {
                 <Button variant="outline" onClick={() => handleShare('LinkedIn')}>
                   <Linkedin className="h-4 w-4" />
                 </Button>
+                <Button variant="outline" onClick={() => handleShare('WhatsApp')} className="hidden sm:flex">
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('Instagram')} className="hidden sm:flex">
+                  <Instagram className="h-4 w-4" />
+                </Button>
                 <Button variant="outline" onClick={handleCopyLink}>
                   <LinkIcon className="h-4 w-4" />
                 </Button>
               </div>
 
+              {/* Video Section */}
+              {post.video && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Play className="h-5 w-5 text-primary" />
+                    Watch the Full Story
+                  </h3>
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                    <iframe
+                      src={post.video}
+                      title="Fashion Video"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Article Content */}
               <div 
-                className="prose prose-lg max-w-none"
+                className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
@@ -235,23 +416,46 @@ export default function BlogPostPage() {
               </div>
 
               {/* Share Again */}
-              <div className="mt-8 p-6 bg-muted/50 rounded-lg">
+              <div className="mt-8 p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 rounded-lg border border-primary/10">
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Share2 className="h-5 w-5" />
-                  Share this article
+                  <Share2 className="h-5 w-5 text-primary" />
+                  Love this article? Share it!
                 </h3>
-                <div className="flex gap-3">
-                  <Button onClick={() => handleShare('Facebook')} className="flex-1">
-                    <Facebook className="h-4 w-4 mr-2" />
-                    Facebook
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+                  <Button 
+                    onClick={() => handleShare('Facebook')} 
+                    className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white"
+                  >
+                    <Facebook className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Facebook</span>
                   </Button>
-                  <Button onClick={() => handleShare('Twitter')} className="flex-1">
-                    <Twitter className="h-4 w-4 mr-2" />
-                    Twitter
+                  <Button 
+                    onClick={() => handleShare('Twitter')} 
+                    className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 text-white"
+                  >
+                    <Twitter className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Twitter</span>
                   </Button>
-                  <Button onClick={() => handleShare('LinkedIn')} className="flex-1">
-                    <Linkedin className="h-4 w-4 mr-2" />
-                    LinkedIn
+                  <Button 
+                    onClick={() => handleShare('LinkedIn')} 
+                    className="bg-[#0A66C2] hover:bg-[#0A66C2]/90 text-white"
+                  >
+                    <Linkedin className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">LinkedIn</span>
+                  </Button>
+                  <Button 
+                    onClick={() => handleShare('WhatsApp')} 
+                    className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+                  >
+                    <MessageCircle className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">WhatsApp</span>
+                  </Button>
+                  <Button 
+                    onClick={() => handleShare('Instagram')} 
+                    className="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white"
+                  >
+                    <Instagram className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Instagram</span>
                   </Button>
                 </div>
               </div>
@@ -260,23 +464,32 @@ export default function BlogPostPage() {
 
           {/* Related Posts */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-2">
+              <Sparkles className="h-6 w-6 text-primary" />
+              You Might Also Like
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {relatedPosts.map((relatedPost) => (
                 <Link key={relatedPost.id} href={`/blog/${relatedPost.id}`}>
-                  <Card className="group overflow-hidden hover:shadow-lg transition-all cursor-pointer">
-                    <div className="relative h-48 overflow-hidden">
+                  <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-primary/50">
+                    <div className="relative h-48 sm:h-56 overflow-hidden">
                       <img 
                         src={relatedPost.image} 
                         alt={relatedPost.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <Badge className="absolute top-3 left-3">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <Badge className="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm">
                         {relatedPost.category}
                       </Badge>
+                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button size="sm" variant="secondary" className="rounded-full">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold group-hover:text-primary transition-colors line-clamp-2">
+                    <CardContent className="p-4 sm:p-5">
+                      <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                         {relatedPost.title}
                       </h3>
                     </CardContent>
