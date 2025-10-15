@@ -2,9 +2,15 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useBanners } from "@/hooks/useBanners";
 
 export function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { data: bannersData } = useBanners('hero');
+  
+  // Get the first active hero banner, or use default text
+  const heroBanner = bannersData?.banners?.[0];
+  const bannerText = heroBanner?.text || "New Collection 2024";
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -54,21 +60,23 @@ export function HeroSection() {
 
       {/* Main Content */}
       <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-        <div className="max-w-4xl z-10">
+        <div className="max-w-4xl z-10 py-8">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 mb-6 animate-pulse-glow">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-medium bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">
-              New Collection 2024
-            </span>
-          </div>
+          {bannerText && (
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 mb-8 animate-pulse-glow">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">
+                {bannerText}
+              </span>
+            </div>
+          )}
 
           {/* Main Heading */}
           <h1 
-            className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 animate-fade-in-up"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up"
             data-testid="text-hero-title"
           >
-            <span className="block bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-gradient">
+            <span className="block bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-gradient mb-2">
               Fashion
             </span>
             <span className="block bg-gradient-to-r from-pink-200 via-purple-200 to-yellow-200 bg-clip-text text-transparent animate-gradient animation-delay-500">
@@ -77,30 +85,30 @@ export function HeroSection() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-2xl text-gray-300 mb-8 max-w-2xl animate-fade-in-up animation-delay-300" data-testid="text-hero-subtitle">
+          <p className="text-base md:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed animate-fade-in-up animation-delay-300" data-testid="text-hero-subtitle">
             Experience the future of style. Curated collections that blend
             <span className="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text font-semibold"> innovation </span>
             with elegance.
           </p>
 
           {/* Stats */}
-          <div className="flex flex-wrap gap-6 mb-8 animate-fade-in-up animation-delay-500">
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
+          <div className="flex flex-wrap gap-8 mb-10 animate-fade-in-up animation-delay-500">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <TrendingUp className="w-7 h-7 text-white" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-white">50%</div>
-                <div className="text-xs text-gray-400">Off Sale</div>
+                <div className="text-sm text-gray-400">Off Sale</div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
-                <Zap className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                <Zap className="w-7 h-7 text-white" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-white">1000+</div>
-                <div className="text-xs text-gray-400">Products</div>
+                <div className="text-sm text-gray-400">Products</div>
               </div>
             </div>
           </div>
@@ -110,10 +118,10 @@ export function HeroSection() {
             <Link href="/category/new">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-xl shadow-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300 text-base px-8 py-6"
                 data-testid="button-shop-now"
               >
-                <Sparkles className="w-4 h-4 mr-2" />
+                <Sparkles className="w-5 h-5 mr-2" />
                 Shop Now
               </Button>
             </Link>
@@ -121,7 +129,7 @@ export function HeroSection() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="backdrop-blur-md bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105 transition-all duration-300"
+                className="backdrop-blur-md bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/40 hover:scale-105 transition-all duration-300 text-base px-8 py-6"
                 data-testid="button-view-sale"
               >
                 Explore Collections

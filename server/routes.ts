@@ -14,6 +14,8 @@ import Order from "./models/Order";
 import Wishlist from "./models/Wishlist";
 import Review from "./models/Review";
 import Coupon from "./models/Coupon";
+import Banner from "./models/Banner";
+import SiteSettings from "./models/SiteSettings";
 
 export async function registerRoutes(app: express.Application): Promise<Server> {
   
@@ -1656,6 +1658,202 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       res.json({ message: "Coupon deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete coupon" });
+    }
+  });
+
+  // ==================== BANNER ROUTES ====================
+  
+  // Get Active Banners (Public)
+  app.get("/api/banners", async (req: Request, res: Response) => {
+    try {
+      const { location } = req.query;
+      const query: any = { isActive: true };
+      
+      if (location) {
+        query.location = location;
+      }
+      
+      const banners = await Banner.find(query).sort({ createdAt: -1 });
+      res.json({ banners });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch banners" });
+    }
+  });
+
+  // Admin Get All Banners
+  app.get("/api/admin/banners", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const banners = await Banner.find().sort({ createdAt: -1 });
+      res.json({ banners });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch banners" });
+    }
+  });
+
+  // Create Banner
+  app.post("/api/admin/banners", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { text, type, location, isActive } = req.body;
+      
+      if (!text || !text.trim()) {
+        return res.status(400).json({ message: "Banner text is required" });
+      }
+      
+      const banner = await Banner.create({
+        text: text.trim(),
+        type: type || 'badge',
+        location: location || 'hero',
+        isActive: isActive !== undefined ? isActive : true,
+      });
+      
+      res.status(201).json({ banner, message: "Banner created successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create banner" });
+    }
+  });
+
+  // Update Banner
+  app.patch("/api/admin/banners/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const banner = await Banner.findByIdAndUpdate(id, req.body, { new: true });
+      
+      if (!banner) {
+        return res.status(404).json({ message: "Banner not found" });
+      }
+
+      res.json({ banner, message: "Banner updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update banner" });
+    }
+  });
+
+  // Delete Banner
+  app.delete("/api/admin/banners/:id", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const banner = await Banner.findByIdAndDelete(id);
+      
+      if (!banner) {
+        return res.status(404).json({ message: "Banner not found" });
+      }
+
+      res.json({ message: "Banner deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete banner" });
+    }
+  });
+
+  // ==================== SITE SETTINGS ROUTES ====================
+  
+  // Get Site Settings (Public)
+  app.get("/api/settings", async (req: Request, res: Response) => {
+    try {
+      let settings = await SiteSettings.findOne();
+      
+      // Create default settings if none exist
+      if (!settings) {
+        settings = await SiteSettings.create({});
+      }
+      
+      res.json({ settings });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  // Get Site Settings (Admin)
+  app.get("/api/admin/settings", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      let settings = await SiteSettings.findOne();
+      
+      // Create default settings if none exist
+      if (!settings) {
+        settings = await SiteSettings.create({});
+      }
+      
+      res.json({ settings });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  // Update Site Settings
+  app.patch("/api/admin/settings", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      let settings = await SiteSettings.findOne();
+      
+      if (!settings) {
+        settings = await SiteSettings.create(req.body);
+      } else {
+        settings = await SiteSettings.findOneAndUpdate({}, req.body, { new: true });
+      }
+      
+      res.json({ settings, message: "Settings updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // ==================== SALE MANAGEMENT ROUTES ====================
+  
+  // Get Products on Sale (Public)
+  app.get("/api/products/on-sale", async (req: Request, res: Response) => {
+    try {
+      const products = await Product.find({ isOnSale: true, isActive: true })
+        .populate('categoryId', 'name')
+        .sort({ createdAt: -1 });
+      
+      res.json({ products });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sale products" });
+    }
+  });
+
+  // Toggle Product Sale Status (Admin)
+  app.patch("/api/admin/products/:id/sale", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { isOnSale } = req.body;
+      
+      const product = await Product.findByIdAndUpdate(
+        id,
+        { isOnSale: isOnSale },
+        { new: true }
+      );
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ 
+        product, 
+        message: `Product ${isOnSale ? 'added to' : 'removed from'} sale successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update product sale status" });
+    }
+  });
+
+  // Bulk Update Sale Status (Admin)
+  app.post("/api/admin/products/bulk-sale", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { productIds, isOnSale } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+      
+      await Product.updateMany(
+        { _id: { $in: productIds } },
+        { $set: { isOnSale: isOnSale } }
+      );
+      
+      res.json({ 
+        message: `${productIds.length} products ${isOnSale ? 'added to' : 'removed from'} sale successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to bulk update sale status" });
     }
   });
 

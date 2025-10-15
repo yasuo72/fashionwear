@@ -23,6 +23,7 @@ export interface IProduct extends Document {
   tags?: string[];
   isActive: boolean;
   isFeatured: boolean;
+  isOnSale?: boolean;
 }
 
 const ProductVariantSchema = new Schema({
@@ -101,6 +102,10 @@ const ProductSchema: Schema = new Schema(
       default: true,
     },
     isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    isOnSale: {
       type: Boolean,
       default: false,
     },

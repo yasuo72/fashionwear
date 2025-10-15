@@ -43,6 +43,7 @@ import {
   Truck,
   X,
   Search,
+  Megaphone,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
@@ -73,16 +74,33 @@ import { OrderManagement } from "@/components/admin/OrderManagement";
 import { CategoryManagement } from "@/components/admin/CategoryManagement";
 import { CouponManagement } from "@/components/admin/CouponManagement";
 import { SalesAnalytics } from "@/components/admin/SalesAnalytics";
+import { BannerManagement } from "@/components/admin/BannerManagement";
+import { SettingsManagement } from "@/components/admin/SettingsManagement";
+import { SaleManagement } from "@/components/admin/SaleManagement";
+import { 
+  useAdminBanners,
+  useCreateBanner,
+  useUpdateBanner,
+  useDeleteBanner
+} from "@/hooks/useBanners";
+import {
+  useAdminSettings,
+  useUpdateSettings,
+  useToggleProductSale,
+  useBulkToggleSale
+} from "@/hooks/useSettings";
 import { useQuery } from "@tanstack/react-query";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, id: "dashboard" },
   { title: "Sales Analytics", icon: TrendingUp, id: "sales" },
   { title: "Products", icon: Package, id: "products" },
+  { title: "Sale Management", icon: Tag, id: "sale-management" },
   { title: "Categories", icon: FolderTree, id: "categories" },
   { title: "Orders", icon: ShoppingCart, id: "orders" },
   { title: "Customers", icon: Users, id: "customers" },
   { title: "Coupons", icon: Tag, id: "coupons" },
+  { title: "Banners", icon: Megaphone, id: "banners" },
   { title: "Settings", icon: Settings, id: "settings" },
 ];
 
@@ -96,6 +114,8 @@ export default function AdminDashboard() {
   const { data: adminCategoriesData } = useAdminCategories();
   const { data: couponsData } = useAdminCoupons();
   const { data: topProductsData } = useTopProducts();
+  const { data: bannersData } = useAdminBanners();
+  const { data: settingsData } = useAdminSettings();
   
   // Mutations
   const createProduct = useCreateProduct();
@@ -108,6 +128,12 @@ export default function AdminDashboard() {
   const createCoupon = useCreateCoupon();
   const updateCoupon = useUpdateCoupon();
   const deleteCoupon = useDeleteCoupon();
+  const createBanner = useCreateBanner();
+  const updateBanner = useUpdateBanner();
+  const deleteBanner = useDeleteBanner();
+  const updateSettings = useUpdateSettings();
+  const toggleProductSale = useToggleProductSale();
+  const bulkToggleSale = useBulkToggleSale();
   
   // State
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -330,6 +356,105 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to delete coupon. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Banner handlers
+  const handleCreateBanner = async (data: any) => {
+    try {
+      await createBanner.mutateAsync(data);
+      toast({
+        title: "Banner Created",
+        description: "Banner has been created successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create banner. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateBanner = async (data: any) => {
+    try {
+      await updateBanner.mutateAsync(data);
+      toast({
+        title: "Banner Updated",
+        description: "Banner has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update banner. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteBanner = async (bannerId: string) => {
+    try {
+      await deleteBanner.mutateAsync(bannerId);
+      toast({
+        title: "Banner Deleted",
+        description: "Banner has been deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete banner. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Settings handlers
+  const handleUpdateSettings = async (data: any) => {
+    try {
+      await updateSettings.mutateAsync(data);
+      toast({
+        title: "Settings Updated",
+        description: "Site settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update settings. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Sale management handlers
+  const handleToggleSale = async (id: string, isOnSale: boolean) => {
+    try {
+      await toggleProductSale.mutateAsync({ id, isOnSale });
+      toast({
+        title: isOnSale ? "Added to Sale" : "Removed from Sale",
+        description: `Product has been ${isOnSale ? 'added to' : 'removed from'} sale successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update product sale status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkToggleSale = async (productIds: string[], isOnSale: boolean) => {
+    try {
+      await bulkToggleSale.mutateAsync({ productIds, isOnSale });
+      toast({
+        title: "Bulk Update Complete",
+        description: `${productIds.length} products ${isOnSale ? 'added to' : 'removed from'} sale successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to bulk update sale status. Please try again.",
         variant: "destructive",
       });
     }
@@ -667,52 +792,36 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {activeTab === "settings" && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold">Settings</h2>
-                  <p className="text-muted-foreground">Manage application settings</p>
-                </div>
-                
-                <div className="grid gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Store Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="storeName">Store Name</Label>
-                        <Input id="storeName" defaultValue="FashionHub" />
-                      </div>
-                      <div>
-                        <Label htmlFor="storeEmail">Store Email</Label>
-                        <Input id="storeEmail" defaultValue="admin@fashionhub.com" />
-                      </div>
-                      <div>
-                        <Label htmlFor="storePhone">Store Phone</Label>
-                        <Input id="storePhone" defaultValue="+1 (555) 123-4567" />
-                      </div>
-                      <Button>Save Changes</Button>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Shipping Settings</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="freeShipping">Free Shipping Threshold (₹)</Label>
-                        <Input id="freeShipping" type="number" defaultValue="4149" />
-                      </div>
-                      <div>
-                        <Label htmlFor="shippingRate">Standard Shipping Rate (₹)</Label>
-                        <Input id="shippingRate" type="number" defaultValue="830" />
-                      </div>
-                      <Button>Save Changes</Button>
-                    </CardContent>
-                  </Card>
-                </div>
+            {activeTab === "banners" && (
+              <div>
+                <BannerManagement
+                  banners={bannersData?.banners || []}
+                  onCreateBanner={handleCreateBanner}
+                  onUpdateBanner={handleUpdateBanner}
+                  onDeleteBanner={handleDeleteBanner}
+                  isLoading={createBanner.isPending || updateBanner.isPending || deleteBanner.isPending}
+                />
+              </div>
+            )}
+
+            {activeTab === "sale-management" && (
+              <div>
+                <SaleManagement
+                  products={products}
+                  onToggleSale={handleToggleSale}
+                  onBulkToggleSale={handleBulkToggleSale}
+                  isLoading={toggleProductSale.isPending || bulkToggleSale.isPending}
+                />
+              </div>
+            )}
+
+            {activeTab === "settings" && settingsData?.settings && (
+              <div>
+                <SettingsManagement
+                  settings={settingsData.settings}
+                  onUpdateSettings={handleUpdateSettings}
+                  isLoading={updateSettings.isPending}
+                />
               </div>
             )}
           </main>
