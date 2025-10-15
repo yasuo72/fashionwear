@@ -28,20 +28,20 @@
     </td>
     <td width="25%" align="center">
       <b>🛍️ Product Listing</b><br/>
-      <img src="./screenshots/Screenshot%202025-10-16%20013347.png" width="100%" alt="Product Listing"/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030150.png" width="100%" alt="Product Listing"/>
     </td>
     <td width="25%" align="center">
       <b>📱 Product Details</b><br/>
-      <img src="./screenshots/Screenshot%202025-10-16%20030135.png" width="100%" alt="Product Details"/>
+      <img src="./screenshots/Screenshot 2025-10-16 032255.png" width="100%" alt="Product Details"/>
     </td>
     <td width="25%" align="center">
       <b>🛒 Shopping Cart</b><br/>
-      <img src="./screenshots/Screenshot%202025-10-16%20030150.png" width="100%" alt="Shopping Cart"/>
+      <img src="./screenshots/Screenshot%202025-10-16%20030135.png" width="100%" alt="Shopping Cart"/>
     </td>
   </tr>
   <tr>
     <td width="25%" align="center">
-      <b>👤 User Profile</b><br/>
+      <b>👤 blog page</b><br/>
       <img src="./screenshots/Screenshot%202025-10-16%20030215.png" width="100%" alt="User Profile"/>
     </td>
     <td width="25%" align="center">
@@ -49,17 +49,17 @@
       <img src="./screenshots/Screenshot%202025-10-16%20030229.png" width="100%" alt="Admin Dashboard"/>
     </td>
     <td width="25%" align="center">
-      <b>💝 Wishlist Page</b><br/>
+      <b>💝 Sale Page</b><br/>
       <img src="./screenshots/Screenshot%202025-10-16%20030337.png" width="100%" alt="Wishlist Page"/>
     </td>
     <td width="25%" align="center">
-      <b>🔐 Login Page</b><br/>
+      <b>🔐 user profile</b><br/>
       <img src="./screenshots/Screenshot%202025-10-16%20030438.png" width="100%" alt="Login Page"/>
     </td>
   </tr>
   <tr>
     <td colspan="4" align="center">
-      <b>📝 Blog Page</b><br/>
+      <b>📝 payment Page</b><br/>
       <img src="./screenshots/Screenshot%202025-10-16%20030529.png" width="60%" alt="Blog Page"/>
     </td>
   </tr>
