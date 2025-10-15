@@ -157,12 +157,19 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       // For now, we'll log it (in production, use nodemailer or similar)
       const resetUrl = `${process.env.VITE_API_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
       
-      console.log('Password Reset Link:', resetUrl);
-      console.log('Reset token for', email, ':', resetToken);
+      console.log('\n========================================');
+      console.log('🔐 PASSWORD RESET REQUEST');
+      console.log('========================================');
+      console.log('Email:', email);
+      console.log('Reset Link:', resetUrl);
+      console.log('Token:', resetToken);
+      console.log('Expires:', new Date(Date.now() + 3600000).toLocaleString());
+      console.log('========================================\n');
 
       res.json({ 
         message: "Password reset link sent to email",
-        // Remove this in production - only for development
+        // In development, return the reset link
+        resetUrl: process.env.NODE_ENV === 'development' ? resetUrl : undefined,
         resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
       });
     } catch (error) {

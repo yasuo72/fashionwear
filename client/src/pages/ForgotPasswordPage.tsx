@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, Copy } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resetUrl, setResetUrl] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +34,17 @@ export default function ForgotPasswordPage() {
       }
 
       setEmailSent(true);
+      
+      // In development, show the reset link
+      if (data.resetUrl) {
+        setResetUrl(data.resetUrl);
+      }
+      
       toast({
-        title: "Email Sent!",
-        description: "Check your email for password reset instructions.",
+        title: "Reset Link Generated!",
+        description: data.resetUrl 
+          ? "Copy the reset link below (Development Mode)" 
+          : "Check your email for password reset instructions.",
       });
     } catch (error: any) {
       toast({
@@ -48,6 +57,14 @@ export default function ForgotPasswordPage() {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(resetUrl);
+    toast({
+      title: "Copied!",
+      description: "Reset link copied to clipboard",
+    });
+  };
+
   if (emailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
@@ -56,22 +73,55 @@ export default function ForgotPasswordPage() {
             <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h1 className="text-2xl font-bold mb-2">Check Your Email</h1>
+            <h1 className="text-2xl font-bold mb-2">
+              {resetUrl ? "Reset Link Generated!" : "Check Your Email"}
+            </h1>
             <p className="text-muted-foreground">
-              We've sent password reset instructions to <strong>{email}</strong>
+              {resetUrl 
+                ? `Password reset link for ${email}` 
+                : `We've sent password reset instructions to ${email}`}
             </p>
           </div>
 
+          {resetUrl && (
+            <div className="mb-6 p-4 bg-muted rounded-lg">
+              <p className="text-xs text-muted-foreground mb-2 font-semibold">
+                🔧 DEVELOPMENT MODE - Copy this link:
+              </p>
+              <div className="flex items-center gap-2">
+                <Input 
+                  value={resetUrl} 
+                  readOnly 
+                  className="text-xs"
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                />
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={copyToClipboard}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Or check your server console for the full link
+              </p>
+            </div>
+          )}
+
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Didn't receive the email? Check your spam folder or try again.
-            </p>
+            {!resetUrl && (
+              <p className="text-sm text-muted-foreground">
+                Didn't receive the email? Check your spam folder or try again.
+              </p>
+            )}
             
             <Button
               variant="outline"
               onClick={() => {
                 setEmailSent(false);
                 setEmail("");
+                setResetUrl("");
               }}
               className="w-full"
             >
