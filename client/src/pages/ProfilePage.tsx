@@ -72,6 +72,7 @@ export default function ProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [showImageViewer, setShowImageViewer] = useState(false);
   
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -402,12 +403,38 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
             <div className="relative group">
-              <Avatar className="h-24 w-24 sm:h-32 sm:w-32 ring-4 ring-primary/10">
-                <AvatarImage src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} />
-                <AvatarFallback className="text-2xl">
-                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+              <div 
+                className="cursor-pointer"
+                onClick={() => setShowImageViewer(true)}
+              >
+                <Avatar className="h-24 w-24 sm:h-32 sm:w-32 ring-4 ring-primary/10 hover:ring-primary/30 transition-all">
+                  <AvatarImage 
+                    src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-2xl">
+                    {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              
+              {/* Image Viewer Dialog */}
+              <Dialog open={showImageViewer} onOpenChange={setShowImageViewer}>
+                <DialogContent className="sm:max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Profile Picture</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex justify-center items-center p-4">
+                    <img
+                      src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`}
+                      alt="Profile"
+                      className="max-w-full max-h-[70vh] rounded-lg object-contain"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Upload Dialog */}
               <Dialog open={showImageUpload} onOpenChange={setShowImageUpload}>
                 <DialogTrigger asChild>
                   <Button
