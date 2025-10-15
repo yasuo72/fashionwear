@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { useProduct, useProducts } from "@/hooks/useProducts";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
+import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/useWishlist";
 import { toast } from "@/hooks/use-toast";
 import { ReviewSection } from "@/components/ReviewSection";
 import { useQuery } from "@tanstack/react-query";
@@ -20,11 +21,18 @@ export default function ProductDetailPage() {
   const { data: productData, isLoading, error } = useProduct(slug!);
   const { data: relatedProductsData } = useProducts({ limit: 4 });
   const { data: authData } = useAuth();
+  const { data: wishlistData } = useWishlist();
   const addToCart = useAddToCart();
+  const addToWishlist = useAddToWishlist();
+  const removeFromWishlist = useRemoveFromWishlist();
   
   const product = productData?.product;
   const relatedProducts = relatedProductsData?.products || [];
   const user = authData?.user;
+  const wishlist = wishlistData?.wishlist;
+  
+  // Check if product is in wishlist
+  const isInWishlist = wishlist?.productIds?.some((item: any) => item._id === product?._id) || false;
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
@@ -89,6 +97,73 @@ export default function ProductDetailPage() {
         description: "Failed to add item to cart. Please try again.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be logged in to add items to wishlist.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (isInWishlist) {
+        await removeFromWishlist.mutateAsync(product!._id);
+        toast({
+          title: "Removed from wishlist",
+          description: `${product!.name} has been removed from your wishlist.`,
+        });
+      } else {
+        await addToWishlist.mutateAsync(product!._id);
+        toast({
+          title: "Added to wishlist!",
+          description: `${product!.name} has been added to your wishlist.`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: product!.name,
+      text: `Check out ${product!.name} on FashionHub!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared successfully!",
+          description: "Product link has been shared.",
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "Product link has been copied to clipboard.",
+        });
+      }
+    } catch (error) {
+      // User cancelled or error occurred
+      if ((error as Error).name !== 'AbortError') {
+        toast({
+          title: "Error",
+          description: "Failed to share product.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -173,11 +248,24 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" data-testid="button-share">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={handleShare}
+                    data-testid="button-share"
+                  >
                     <Share2 className="h-5 w-5" />
                   </Button>
-                  <Button variant="outline" size="icon" data-testid="button-add-wishlist">
-                    <Heart className="h-5 w-5" />
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={handleWishlistToggle}
+                    disabled={addToWishlist.isPending || removeFromWishlist.isPending}
+                    data-testid="button-add-wishlist"
+                  >
+                    <Heart 
+                      className={`h-5 w-5 ${isInWishlist ? 'fill-primary text-primary' : ''}`} 
+                    />
                   </Button>
                 </div>
               </div>
