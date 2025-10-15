@@ -26,13 +26,13 @@
 ![Home Page](./screenshots/Screenshot%202025-10-16%20013214.png)
 
 ### 🛍️ Product Listing
-![Products](./screenshots/Screenshot%202025-10-16%20013347.png)
+![Products](./screenshots/Screenshot%202025-10-16%20030150.png)
 
 ### 📱 Product Details
-![Product Details](./screenshots/Screenshot%202025-10-16%20030135.png)
+![Product Details]()
 
 ### 🛒 Shopping Cart
-![Cart](./screenshots/Screenshot%202025-10-16%20030150.png)
+![Cart](./screenshots/Screenshot%202025-10-16%20030135.png)
 
 ### 👤 User Profile
 ![Profile](./screenshots/Screenshot%202025-10-16%20030215.png)
