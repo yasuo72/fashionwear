@@ -342,43 +342,78 @@ export default function BlogPostPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8 pb-8 border-b">
+              <div className="flex flex-wrap items-center gap-2 mb-8 pb-8 border-b">
                 <Button 
                   variant={isLiked ? "default" : "outline"}
                   onClick={handleLike}
-                  className="gap-2"
+                  size="sm"
+                  className="gap-1.5 min-w-[70px]"
                 >
                   <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
-                  {likes}
+                  <span className="text-sm">{likes}</span>
                 </Button>
                 
                 <Button 
                   variant={isSaved ? "default" : "outline"}
                   onClick={() => setIsSaved(!isSaved)}
+                  size="sm"
+                  className="min-w-[44px]"
                 >
                   <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
                 </Button>
 
-                <div className="flex-1"></div>
+                <div className="flex-1 min-w-[20px]"></div>
 
-                <Button variant="outline" onClick={() => handleShare('Facebook')}>
-                  <Facebook className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" onClick={() => handleShare('Twitter')}>
-                  <Twitter className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" onClick={() => handleShare('LinkedIn')}>
-                  <Linkedin className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" onClick={() => handleShare('WhatsApp')} className="hidden sm:flex">
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" onClick={() => handleShare('Instagram')} className="hidden sm:flex">
-                  <Instagram className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" onClick={handleCopyLink}>
-                  <LinkIcon className="h-4 w-4" />
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleShare('Facebook')}
+                    className="min-w-[44px]"
+                  >
+                    <Facebook className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleShare('Twitter')}
+                    className="min-w-[44px]"
+                  >
+                    <Twitter className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleShare('LinkedIn')}
+                    className="min-w-[44px]"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleShare('WhatsApp')}
+                    className="min-w-[44px] hidden xs:flex sm:flex"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleShare('Instagram')}
+                    className="min-w-[44px] hidden xs:flex sm:flex"
+                  >
+                    <Instagram className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleCopyLink}
+                    className="min-w-[44px]"
+                  >
+                    <LinkIcon className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {/* Video Section */}

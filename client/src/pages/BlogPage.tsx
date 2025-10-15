@@ -109,10 +109,94 @@ const blogPosts = [
     likes: 165,
     featured: false,
     tags: ["Accessories", "Jewelry", "Styling"]
+  },
+  {
+    id: "7",
+    title: "Winter Fashion Essentials You Need Now",
+    excerpt: "Stay warm and stylish this winter with our curated list of must-have pieces. From cozy knits to statement coats...",
+    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&h=500&fit=crop",
+    category: "Trends",
+    author: "Neha Gupta",
+    date: "2024-09-20",
+    readTime: "6 min read",
+    views: 9500,
+    likes: 234,
+    featured: false,
+    tags: ["Winter", "Essentials", "Coats"]
+  },
+  {
+    id: "8",
+    title: "The Art of Layering: Master the Look",
+    excerpt: "Learn how to layer like a fashion pro. Create depth, texture, and interest in your outfits with these expert tips...",
+    image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&h=500&fit=crop",
+    category: "Style Tips",
+    author: "Karan Malhotra",
+    date: "2024-09-15",
+    readTime: "7 min read",
+    views: 8900,
+    likes: 201,
+    featured: false,
+    tags: ["Layering", "Styling", "Tips"]
+  },
+  {
+    id: "9",
+    title: "Denim Guide: Find Your Perfect Fit",
+    excerpt: "From skinny to wide-leg, discover which denim style suits your body type best. Complete guide to jean shopping...",
+    image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=500&fit=crop",
+    category: "Style Tips",
+    author: "Priya Sharma",
+    date: "2024-09-10",
+    readTime: "8 min read",
+    views: 12100,
+    likes: 298,
+    featured: false,
+    tags: ["Denim", "Jeans", "Fit Guide"]
+  },
+  {
+    id: "10",
+    title: "Sustainable Brands You Should Know",
+    excerpt: "Support ethical fashion with these amazing sustainable brands. Quality, style, and conscience combined...",
+    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&h=500&fit=crop",
+    category: "Sustainability",
+    author: "Rahul Mehta",
+    date: "2024-09-05",
+    readTime: "9 min read",
+    views: 10200,
+    likes: 267,
+    featured: false,
+    tags: ["Sustainable", "Brands", "Ethical"]
+  },
+  {
+    id: "11",
+    title: "Shoe Collection Essentials for Every Wardrobe",
+    excerpt: "Build the perfect shoe collection with these timeless styles. From sneakers to heels, we've got you covered...",
+    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&h=500&fit=crop",
+    category: "Accessories",
+    author: "Ananya Desai",
+    date: "2024-08-30",
+    readTime: "6 min read",
+    views: 11500,
+    likes: 289,
+    featured: false,
+    tags: ["Shoes", "Footwear", "Essentials"]
+  },
+  {
+    id: "12",
+    title: "Fashion Week Highlights: Top Trends",
+    excerpt: "Catch up on the biggest trends from fashion week. What designers are showing and what you'll be wearing...",
+    image: "https://images.unsplash.com/photo-1558769132-cb1aea1f1c1e?w=800&h=500&fit=crop",
+    category: "Trends",
+    author: "Vikram Singh",
+    date: "2024-08-25",
+    readTime: "10 min read",
+    views: 15800,
+    likes: 412,
+    featured: false,
+    tags: ["Fashion Week", "Runway", "Trends"]
   }
 ];
 
-const categories = ["All", "Trends", "Style Tips", "Sustainability", "Wardrobe", "Accessories"];
+const categories = ["All", "Trends", "Style Tips", "Sustainability", "Wardrobe", "Accessories", "Fashion News"];
 
 interface NewsArticle {
   id: string;
@@ -161,6 +245,106 @@ export default function BlogPage() {
         : [...prev, postId]
     );
   };
+
+  // Fetch fashion news from News API
+  const fetchFashionNews = useCallback(async (pageNum: number) => {
+    const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+    
+    if (!apiKey) {
+      console.log('News API key not found, using static posts only');
+      return [];
+    }
+
+    try {
+      const response = await fetch(
+        `https://newsapi.org/v2/everything?q=fashion OR style OR clothing&sortBy=publishedAt&pageSize=6&page=${pageNum}&language=en&apiKey=${apiKey}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch news');
+      }
+
+      const data = await response.json();
+      
+      return data.articles.map((article: any, index: number) => ({
+        id: `news-${pageNum}-${index}`,
+        title: article.title,
+        excerpt: article.description || article.content?.substring(0, 150) + '...' || 'Read more about this fashion story...',
+        image: article.urlToImage || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=500&fit=crop',
+        category: 'Fashion News',
+        author: article.author || 'Fashion Insider',
+        date: article.publishedAt,
+        readTime: '3 min read',
+        views: Math.floor(Math.random() * 10000) + 1000,
+        likes: Math.floor(Math.random() * 500) + 50,
+        featured: false,
+        tags: ['Fashion', 'News', 'Latest'],
+        source: article.source.name,
+        url: article.url
+      }));
+    } catch (error) {
+      console.error('Error fetching fashion news:', error);
+      return [];
+    }
+  }, []);
+
+  // Load more posts
+  const loadMorePosts = useCallback(async () => {
+    if (loading || !hasMore) return;
+    
+    setLoading(true);
+    
+    try {
+      const newPosts = await fetchFashionNews(page);
+      
+      if (newPosts.length === 0) {
+        setHasMore(false);
+      } else {
+        setAllPosts(prev => [...prev, ...newPosts]);
+        setPage(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, loading, hasMore, fetchFashionNews]);
+
+  // Initial load
+  useEffect(() => {
+    loadMorePosts();
+  }, []);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [loadMorePosts, hasMore, loading]);
+
+  // Filter posts based on search and category
+  const filteredAllPosts = allPosts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -377,12 +561,12 @@ export default function BlogPage() {
                     {selectedCategory === "All" ? "All Articles" : selectedCategory}
                   </h2>
                   <p className="text-muted-foreground">
-                    {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'}
+                    {filteredAllPosts.length} {filteredAllPosts.length === 1 ? 'article' : 'articles'}
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {filteredPosts.map((post) => (
+                  {filteredAllPosts.map((post) => (
                     <Card key={post.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300">
                       <div className="relative overflow-hidden h-48">
                         <img 
@@ -445,7 +629,28 @@ export default function BlogPage() {
                   ))}
                 </div>
 
-                {filteredPosts.length === 0 && (
+                {/* Loading Indicator */}
+                {loading && (
+                  <div className="flex justify-center items-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <span className="ml-2 text-muted-foreground">Loading more articles...</span>
+                  </div>
+                )}
+
+                {/* Infinite Scroll Trigger */}
+                <div ref={observerTarget} className="h-10" />
+
+                {/* No More Posts */}
+                {!hasMore && filteredAllPosts.length > 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      🎉 You've reached the end! Check back later for more fashion news.
+                    </p>
+                  </div>
+                )}
+
+                {/* No Results */}
+                {filteredAllPosts.length === 0 && !loading && (
                   <Card className="p-12 text-center">
                     <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No articles found</h3>
