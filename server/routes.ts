@@ -247,10 +247,19 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // Update profile
   app.patch("/api/user/profile", authenticate, async (req: AuthRequest, res: Response) => {
     try {
-      const { firstName, lastName, phone } = req.body;
+      const { firstName, lastName, phone, bio, address, preferences } = req.body;
+      
+      const updateData: any = {};
+      if (firstName) updateData.firstName = firstName;
+      if (lastName) updateData.lastName = lastName;
+      if (phone !== undefined) updateData.phone = phone;
+      if (bio !== undefined) updateData.bio = bio;
+      if (address) updateData.address = address;
+      if (preferences) updateData.preferences = preferences;
+
       const user = await User.findByIdAndUpdate(
         req.user!.id,
-        { firstName, lastName, phone },
+        updateData,
         { new: true, runValidators: true }
       ).select("-password");
 
@@ -260,26 +269,99 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     }
   });
 
-  // Change password
+  // Update profile image
+  app.patch("/api/user/profile/image", authenticate, async (req: AuthRequest, res: Response) => {
+    try {
+      const { profileImage } = req.body;
+      
+      if (!profileImage) {
+        return res.status(400).json({ error: "Profile image URL is required" });
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.user!.id,
+        { profileImage },
+        { new: true, runValidators: true }
+      ).select("-password");
+
+      res.json({ user });
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Change password (when logged in)
   app.post("/api/user/change-password", authenticate, async (req: AuthRequest, res: Response) => {
     try {
       const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Current and new password are required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ error: "New password must be at least 6 characters" });
+      }
 
       const user = await User.findById(req.user!.id);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-      if (!isValidPassword) {
-        return res.status(401).json({ error: "Current password is incorrect" });
+      // Verify current password
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "Current password is incorrect" });
       }
 
-      user.password = await bcrypt.hash(newPassword, 10);
+      // Hash and update new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
       await user.save();
 
       res.json({ message: "Password changed successfully" });
     } catch (error) {
+      console.error('Change password error:', error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Delete account
+  app.delete("/api/user/account", authenticate, async (req: AuthRequest, res: Response) => {
+    try {
+      const { password } = req.body;
+
+      if (!password) {
+        return res.status(400).json({ error: "Password is required to delete account" });
+      }
+
+      const user = await User.findById(req.user!.id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Verify password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "Incorrect password" });
+      }
+
+      // Delete user's data
+      await Cart.deleteMany({ user: req.user!.id });
+      await Wishlist.deleteMany({ user: req.user!.id });
+      await Order.updateMany({ user: req.user!.id }, { user: null });
+      await Review.updateMany({ user: req.user!.id }, { user: null });
+      await Address.deleteMany({ user: req.user!.id });
+      
+      // Delete user
+      await User.findByIdAndDelete(req.user!.id);
+
+      // Clear cookie
+      clearTokenCookie(res);
+
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error('Delete account error:', error);
       res.status(500).json({ error: "Server error" });
     }
   });

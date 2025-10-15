@@ -7,6 +7,20 @@ export interface IUser extends Document {
   lastName: string;
   phone?: string;
   role: 'user' | 'admin';
+  profileImage?: string;
+  bio?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
+  preferences?: {
+    newsletter?: boolean;
+    notifications?: boolean;
+    theme?: 'light' | 'dark' | 'system';
+  };
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   createdAt: Date;
@@ -44,6 +58,36 @@ const UserSchema: Schema = new Schema(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    profileImage: {
+      type: String,
+      default: '',
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: String,
+    },
+    preferences: {
+      newsletter: {
+        type: Boolean,
+        default: true,
+      },
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+      theme: {
+        type: String,
+        enum: ['light', 'dark', 'system'],
+        default: 'system',
+      },
     },
     resetPasswordToken: {
       type: String,

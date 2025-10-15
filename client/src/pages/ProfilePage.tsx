@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,7 +31,13 @@ import {
   Truck,
   CheckCircle,
   Clock,
-  X
+  X,
+  Camera,
+  Upload,
+  Shield,
+  Bell,
+  Palette,
+  Loader2
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -56,7 +63,15 @@ export default function ProfilePage() {
     firstName: "",
     lastName: "",
     phone: "",
+    bio: "",
+    profileImage: "",
   });
+  
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -87,7 +102,10 @@ export default function ProfilePage() {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: (user as any).phone || "",
+        bio: (user as any).bio || "",
+        profileImage: (user as any).profileImage || "",
       });
+      setImageUrl((user as any).profileImage || "");
     }
   }, [user]);
 
@@ -237,6 +255,135 @@ export default function ProfilePage() {
     setShowAddressDialog(true);
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "Image size should be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'fashionfusion'); // Must be unsigned preset in Cloudinary
+    
+    try {
+      const response = await fetch(
+        'https://api.cloudinary.com/v1_1/dfm7ifrkh/image/upload',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Cloudinary error:', errorData);
+        throw new Error(errorData.error?.message || 'Upload failed');
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw new Error('Failed to upload image to Cloudinary');
+    }
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleImageUpload = async () => {
+    setUploadingImage(true);
+
+    try {
+      let finalImageUrl = imageUrl;
+
+      // If user selected a file, upload it
+      if (selectedFile) {
+        // Upload to Cloudinary (no API key required for unsigned uploads)
+        finalImageUrl = await uploadToCloudinary(selectedFile);
+        
+        // Fallback to base64 if Cloudinary fails
+        // finalImageUrl = await convertToBase64(selectedFile);
+      }
+
+      if (!finalImageUrl) {
+        toast({
+          title: "Error",
+          description: "Please select an image or enter an image URL",
+          variant: "destructive",
+        });
+        setUploadingImage(false);
+        return;
+      }
+
+      const response = await fetch("/api/user/profile/image", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ profileImage: finalImageUrl }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update image");
+
+      toast({
+        title: "Success!",
+        description: "Profile image updated successfully",
+      });
+      
+      setShowImageUpload(false);
+      setProfileForm({ ...profileForm, profileImage: finalImageUrl });
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setImageUrl("");
+      
+      // Reload to show new image
+      window.location.reload();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const getOrderStatusIcon = (status: string) => {
     switch (status) {
       case 'pending': return <Clock className="h-4 w-4 text-yellow-500" />;
@@ -253,23 +400,153 @@ export default function ProfilePage() {
       
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center gap-6 mb-8">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} />
-              <AvatarFallback>
-                {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
+          <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+            <div className="relative group">
+              <Avatar className="h-24 w-24 sm:h-32 sm:w-32 ring-4 ring-primary/10">
+                <AvatarImage src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} />
+                <AvatarFallback className="text-2xl">
+                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <Dialog open={showImageUpload} onOpenChange={setShowImageUpload}>
+                <DialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="absolute bottom-0 right-0 rounded-full h-10 w-10 shadow-lg"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Update Profile Picture</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    {/* File Upload */}
+                    <div>
+                      <Label htmlFor="fileUpload" className="block mb-2">
+                        Upload from Device
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="fileUpload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileSelect}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        JPG, PNG, GIF up to 5MB
+                      </p>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          Or
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* URL Input */}
+                    <div>
+                      <Label htmlFor="imageUrl">Image URL</Label>
+                      <Input
+                        id="imageUrl"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        disabled={!!selectedFile}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Or paste a direct image URL
+                      </p>
+                    </div>
+
+                    {/* Preview */}
+                    {(previewUrl || imageUrl) && (
+                      <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-muted/30">
+                        <p className="text-sm font-medium">Preview</p>
+                        <Avatar className="h-32 w-32 ring-2 ring-primary/20">
+                          <AvatarImage src={previewUrl || imageUrl} />
+                          <AvatarFallback>Preview</AvatarFallback>
+                        </Avatar>
+                        {selectedFile && (
+                          <div className="text-center">
+                            <p className="text-xs text-muted-foreground">
+                              {selectedFile.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {(selectedFile.size / 1024).toFixed(2)} KB
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        onClick={handleImageUpload} 
+                        className="flex-1"
+                        disabled={uploadingImage || (!selectedFile && !imageUrl)}
+                      >
+                        {uploadingImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 mr-2" />
+                            Update Image
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowImageUpload(false);
+                          setSelectedFile(null);
+                          setPreviewUrl("");
+                          setImageUrl("");
+                        }} 
+                        className="flex-1"
+                        disabled={uploadingImage}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="text-center sm:text-left">
               <h1 className="text-3xl font-bold mb-1">
                 {user.firstName} {user.lastName}
               </h1>
               <p className="text-muted-foreground">{user.email}</p>
-              {user.role === 'admin' && (
-                <span className="inline-block bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full mt-1">
-                  Admin
-                </span>
+              {(user as any).bio && (
+                <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                  {(user as any).bio}
+                </p>
               )}
+              <div className="flex items-center gap-2 mt-2 justify-center sm:justify-start">
+                {user.role === 'admin' && (
+                  <Badge variant="default">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Admin
+                  </Badge>
+                )}
+                <Badge variant="secondary">
+                  <User className="h-3 w-3 mr-1" />
+                  Member since {new Date((user as any).createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                </Badge>
+              </div>
             </div>
           </div>
 
@@ -361,13 +638,34 @@ export default function ProfilePage() {
                     />
                   </div>
 
-                  <div className="flex items-center gap-2 pt-4">
+                  <div>
+                    <Label htmlFor="bio">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      value={profileForm.bio}
+                      onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
+                      disabled={!isEditing}
+                      placeholder="Tell us about yourself..."
+                      rows={4}
+                      className="resize-none"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {profileForm.bio.length}/200 characters
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex flex-wrap items-center gap-2 pt-2">
                     <Badge variant="secondary" className="flex items-center gap-1">
                       <User className="h-3 w-3" />
                       Member since {new Date((user as any).createdAt || Date.now()).toLocaleDateString()}
                     </Badge>
                     {user.role === 'admin' && (
-                      <Badge variant="default">Admin Account</Badge>
+                      <Badge variant="default">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Admin Account
+                      </Badge>
                     )}
                   </div>
                 </CardContent>
