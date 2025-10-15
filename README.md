@@ -22,32 +22,54 @@
 
 <div align="center">
 
-### 🏠 Home Page
-![Home Page](./screenshots/Screenshot%202025-10-16%20013214.png)
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto;">
 
-### 🛍️ Product Listing
-![Products](./screenshots/Screenshot%202025-10-16%20013347.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">🏠 Home Page</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20013214.png" alt="Home Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 📱 Product Details
-![Product Details](./screenshots/Screenshot%202025-10-16%20030135.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">🛍️ Product Listing</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20013347.png" alt="Product Listing" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 🛒 Shopping Cart
-![Cart](./screenshots/Screenshot%202025-10-16%20030150.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">📱 Product Details</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030135.png" alt="Product Details" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 👤 User Profile
-![Profile](./screenshots/Screenshot%202025-10-16%20030215.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">🛒 Shopping Cart</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030150.png" alt="Shopping Cart" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 📊 Admin Dashboard
-![Admin](./screenshots/Screenshot%202025-10-16%20030229.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">👤 User Profile</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030215.png" alt="User Profile" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 💝 Wishlist Page
-![Wishlist](./screenshots/Screenshot%202025-10-16%20030337.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">📊 Admin Dashboard</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030229.png" alt="Admin Dashboard" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 🔐 Login Page
-![Login](./screenshots/Screenshot%202025-10-16%20030438.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">💝 Wishlist Page</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030337.png" alt="Wishlist Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-### 📝 Blog Page
-![Blog](./screenshots/Screenshot%202025-10-16%20030529.png)
+<div>
+<h4 style="margin-bottom: 10px; text-align: center;">🔐 Login Page</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030438.png" alt="Login Page" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
+
+</div>
+
+<div align="center" style="margin-top: 20px;">
+<h4>📝 Blog Page</h4>
+<img src="./screenshots/Screenshot%202025-10-16%20030529.png" alt="Blog Page" style="width: 60%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
 </div>
 
