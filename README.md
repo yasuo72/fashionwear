@@ -74,7 +74,7 @@
 **Rohit Singh**
 
 [![GitHub](https://img.shields.io/badge/GitHub-yasuo72-black?style=for-the-badge&logo=github)](https://github.com/yasuo72)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-orange?style=for-the-badge&logo=google-chrome)](https://github.com/yasuo72)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-orange?style=for-the-badge&logo=google-chrome)](https://yasuo-portfolio.vercel.app/)
 
 > *"Building the future of e-commerce, one line of code at a time"*
 
