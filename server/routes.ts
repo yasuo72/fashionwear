@@ -153,9 +153,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
       await user.save();
 
-      // In production, send email with reset link
-      // For now, we'll log it (in production, use nodemailer or similar)
-      const resetUrl = `${process.env.VITE_API_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+      // Generate reset URL based on request origin
+      const origin = req.get('origin') || req.get('referer')?.split('/').slice(0, 3).join('/') || 
+                     process.env.VITE_API_URL || 'http://localhost:5000';
+      const resetUrl = `${origin}/reset-password?token=${resetToken}`;
       
       console.log('\n========================================');
       console.log('🔐 PASSWORD RESET REQUEST');
@@ -167,9 +168,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       console.log('========================================\n');
 
       res.json({ 
-        message: "Password reset link sent to email",
-        // In development, return the reset link
-        resetUrl: process.env.NODE_ENV === 'development' ? resetUrl : undefined,
+        message: "Password reset link generated successfully",
+        // Return reset link (until email is configured)
+        resetUrl: resetUrl,
+        // Only show token in development for debugging
         resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
       });
     } catch (error) {

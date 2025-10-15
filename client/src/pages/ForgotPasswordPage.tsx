@@ -42,9 +42,7 @@ export default function ForgotPasswordPage() {
       
       toast({
         title: "Reset Link Generated!",
-        description: data.resetUrl 
-          ? "Copy the reset link below (Development Mode)" 
-          : "Check your email for password reset instructions.",
+        description: "Copy the reset link below or click 'Open Reset Link'",
       });
     } catch (error: any) {
       toast({
@@ -74,19 +72,17 @@ export default function ForgotPasswordPage() {
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h1 className="text-2xl font-bold mb-2">
-              {resetUrl ? "Reset Link Generated!" : "Check Your Email"}
+              Reset Link Generated!
             </h1>
             <p className="text-muted-foreground">
-              {resetUrl 
-                ? `Password reset link for ${email}` 
-                : `We've sent password reset instructions to ${email}`}
+              Password reset link for <strong>{email}</strong>
             </p>
           </div>
 
           {resetUrl && (
             <div className="mb-6 p-4 bg-muted rounded-lg">
               <p className="text-xs text-muted-foreground mb-2 font-semibold">
-                🔧 DEVELOPMENT MODE - Copy this link:
+                📱 Copy and open this link to reset your password:
               </p>
               <div className="flex items-center gap-2">
                 <Input 
@@ -104,17 +100,18 @@ export default function ForgotPasswordPage() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Or check your server console for the full link
+                💡 Tap the link to select all, then copy it
               </p>
+              <Button 
+                className="w-full mt-3"
+                onClick={() => window.open(resetUrl, '_blank')}
+              >
+                Open Reset Link
+              </Button>
             </div>
           )}
 
           <div className="space-y-4">
-            {!resetUrl && (
-              <p className="text-sm text-muted-foreground">
-                Didn't receive the email? Check your spam folder or try again.
-              </p>
-            )}
             
             <Button
               variant="outline"
