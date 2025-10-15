@@ -256,32 +256,44 @@ export default function BlogPage() {
     }
 
     try {
+      // Better search query for fashion content
+      const query = encodeURIComponent('fashion OR vogue OR style OR runway OR designer OR clothing OR outfit OR "fashion week"');
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=fashion OR style OR clothing&sortBy=publishedAt&pageSize=6&page=${pageNum}&language=en&apiKey=${apiKey}`
+        `https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=10&page=${pageNum}&language=en&apiKey=${apiKey}`
       );
       
       if (!response.ok) {
-        throw new Error('Failed to fetch news');
+        const errorData = await response.json();
+        console.error('News API Error:', errorData);
+        throw new Error(errorData.message || 'Failed to fetch news');
       }
 
       const data = await response.json();
       
-      return data.articles.map((article: any, index: number) => ({
-        id: `news-${pageNum}-${index}`,
-        title: article.title,
-        excerpt: article.description || article.content?.substring(0, 150) + '...' || 'Read more about this fashion story...',
-        image: article.urlToImage || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=500&fit=crop',
-        category: 'Fashion News',
-        author: article.author || 'Fashion Insider',
-        date: article.publishedAt,
-        readTime: '3 min read',
-        views: Math.floor(Math.random() * 10000) + 1000,
-        likes: Math.floor(Math.random() * 500) + 50,
-        featured: false,
-        tags: ['Fashion', 'News', 'Latest'],
-        source: article.source.name,
-        url: article.url
-      }));
+      console.log(`Fetched ${data.articles?.length || 0} articles from News API (page ${pageNum})`);
+      
+      if (!data.articles || data.articles.length === 0) {
+        return [];
+      }
+      
+      return data.articles
+        .filter((article: any) => article.title && article.urlToImage) // Filter out articles without images
+        .map((article: any, index: number) => ({
+          id: `news-${pageNum}-${index}-${Date.now()}`,
+          title: article.title.replace(' - ' + article.source.name, ''), // Clean title
+          excerpt: article.description || article.content?.substring(0, 150) + '...' || 'Read more about this fashion story...',
+          image: article.urlToImage || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=500&fit=crop',
+          category: 'Fashion News',
+          author: article.author?.split(',')[0] || article.source.name || 'Fashion Insider',
+          date: article.publishedAt,
+          readTime: '3 min read',
+          views: Math.floor(Math.random() * 10000) + 1000,
+          likes: Math.floor(Math.random() * 500) + 50,
+          featured: false,
+          tags: ['Fashion', 'News', 'Latest'],
+          source: article.source.name,
+          url: article.url
+        }));
     } catch (error) {
       console.error('Error fetching fashion news:', error);
       return [];
