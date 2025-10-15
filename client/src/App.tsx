@@ -16,6 +16,8 @@ import OrdersPage from "@/pages/OrdersPage";
 import OrderDetailsPage from "@/pages/OrderDetailsPage";
 import WishlistPage from "@/pages/WishlistPage";
 import LoginPage from "@/pages/LoginPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AdminDashboard from "@/pages/AdminDashboard";
 import SalePage from "@/pages/SalePage";
@@ -42,6 +44,8 @@ function Router() {
       <Route path="/wishlist" component={WishlistPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/register" component={LoginPage} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
+      <Route path="/reset-password" component={ResetPasswordPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/sales" component={SalePage} />

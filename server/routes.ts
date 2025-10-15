@@ -130,6 +130,96 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     res.json({ message: "Logged out successfully" });
   });
 
+  // Forgot Password - Request reset token
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        return res.json({ message: "If the email exists, a reset link has been sent" });
+      }
+
+      // Generate reset token (simple version - in production use crypto)
+      const resetToken = Math.random().toString(36).substring(2, 15) + 
+                        Math.random().toString(36).substring(2, 15);
+      
+      // Hash the token before saving
+      const hashedToken = await bcrypt.hash(resetToken, 10);
+      
+      // Set token and expiry (1 hour)
+      user.resetPasswordToken = hashedToken;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+      await user.save();
+
+      // In production, send email with reset link
+      // For now, we'll log it (in production, use nodemailer or similar)
+      const resetUrl = `${process.env.VITE_API_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+      
+      console.log('Password Reset Link:', resetUrl);
+      console.log('Reset token for', email, ':', resetToken);
+
+      res.json({ 
+        message: "Password reset link sent to email",
+        // Remove this in production - only for development
+        resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Reset Password - Using token
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+
+      if (!token || !password) {
+        return res.status(400).json({ error: "Token and password are required" });
+      }
+
+      if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters" });
+      }
+
+      // Find user with valid reset token
+      const users = await User.find({
+        resetPasswordExpires: { $gt: Date.now() }
+      });
+
+      let user = null;
+      for (const u of users) {
+        if (u.resetPasswordToken) {
+          const isValid = await bcrypt.compare(token, u.resetPasswordToken);
+          if (isValid) {
+            user = u;
+            break;
+          }
+        }
+      }
+
+      if (!user) {
+        return res.status(400).json({ error: "Invalid or expired reset token" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Update password and clear reset fields
+      user.password = hashedPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
   // Get current user
   app.get("/api/auth/me", authenticate, async (req: AuthRequest, res: Response) => {
     try {
