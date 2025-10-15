@@ -12,7 +12,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)](https://www.mongodb.com/)
 [![Railway](https://img.shields.io/badge/Deployed%20on-Railway-purple)](https://railway.app/)
 
-[Live Demo](https://fashionhub.up.railway.app) • [Report Bug](https://github.com/yasuo72/fashionwear/issues) • [Request Feature](https://github.com/yasuo72/fashionwear/issues)
+[Live Demo](https://web-production-454bd.up.railway.app/) • [Report Bug](https://github.com/yasuo72/fashionwear/issues) • [Request Feature](https://github.com/yasuo72/fashionwear/issues)
 
 </div>
 
