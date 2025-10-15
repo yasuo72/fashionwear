@@ -28,9 +28,6 @@
 ### 🛍️ Product Listing
 ![Products](./screenshots/Screenshot%202025-10-16%20030150.png)
 
-### 📱 Product Details
-![Product Details]()
-
 ### 🛒 Shopping Cart
 ![Cart](./screenshots/Screenshot%202025-10-16%20030135.png)
 
@@ -40,7 +37,7 @@
 ### 📊 Admin Dashboard
 ![Admin](./screenshots/Screenshot%202025-10-16%20030229.png)
 
-### 💝 Wishlist Page
+### 💝 sale Page
 ![Wishlist](./screenshots/Screenshot%202025-10-16%20030337.png)
 
 ### 🔐 user profile
