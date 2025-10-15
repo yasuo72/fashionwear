@@ -23,22 +23,31 @@
 <div align="center">
 
 ### 🏠 Home Page
-![Home Page](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Home+Page)
+![Home Page](./screenshots/Screenshot%202025-10-16%20013214.png)
 
 ### 🛍️ Product Listing
-![Products](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Product+Listing)
+![Products](./screenshots/Screenshot%202025-10-16%20013347.png)
 
 ### 📱 Product Details
-![Product Details](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Product+Details)
+![Product Details](./screenshots/Screenshot%202025-10-16%20030135.png)
 
 ### 🛒 Shopping Cart
-![Cart](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Shopping+Cart)
+![Cart](./screenshots/Screenshot%202025-10-16%20030150.png)
 
 ### 👤 User Profile
-![Profile](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=User+Profile)
+![Profile](./screenshots/Screenshot%202025-10-16%20030215.png)
 
 ### 📊 Admin Dashboard
-![Admin](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Admin+Dashboard)
+![Admin](./screenshots/Screenshot%202025-10-16%20030229.png)
+
+### 💝 Wishlist Page
+![Wishlist](./screenshots/Screenshot%202025-10-16%20030337.png)
+
+### 🔐 Login Page
+![Login](./screenshots/Screenshot%202025-10-16%20030438.png)
+
+### 📝 Blog Page
+![Blog](./screenshots/Screenshot%202025-10-16%20030529.png)
 
 </div>
 
