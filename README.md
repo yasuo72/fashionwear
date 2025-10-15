@@ -34,7 +34,7 @@
 ### 🛒 Shopping Cart
 ![Cart](./screenshots/Screenshot%202025-10-16%20030135.png)
 
-### 👤 User Profile
+### 👤 blog page
 ![Profile](./screenshots/Screenshot%202025-10-16%20030215.png)
 
 ### 📊 Admin Dashboard
@@ -43,10 +43,10 @@
 ### 💝 Wishlist Page
 ![Wishlist](./screenshots/Screenshot%202025-10-16%20030337.png)
 
-### 🔐 Login Page
+### 🔐 user profile
 ![Login](./screenshots/Screenshot%202025-10-16%20030438.png)
 
-### 📝 Blog Page
+### 📝 payment 
 ![Blog](./screenshots/Screenshot%202025-10-16%20030529.png)
 
 </div>
