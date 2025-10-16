@@ -86,16 +86,16 @@ export default function SalePage() {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-red-500 via-pink-500 to-orange-500 text-white py-12">
+        <div className="bg-gradient-to-r from-red-500 via-pink-500 to-orange-500 text-white py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Flame className="h-8 w-8" />
-              <h1 className="text-4xl md:text-6xl font-bold">MEGA SALE</h1>
-              <Flame className="h-8 w-8" />
+              <Flame className="h-6 w-6 md:h-8 md:w-8" />
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold">MEGA SALE</h1>
+              <Flame className="h-6 w-6 md:h-8 md:w-8" />
             </div>
-            <p className="text-xl md:text-2xl mb-6">Up to 70% OFF on Fashion Essentials</p>
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Badge className="bg-white text-red-500 text-lg px-4 py-2">
+            <p className="text-base md:text-xl lg:text-2xl mb-4 md:mb-6 px-4">Up to 70% OFF on Fashion Essentials</p>
+            <div className="flex items-center justify-center gap-4">
+              <Badge className="bg-white text-red-500 text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2">
                 <Zap className="h-4 w-4 mr-2" />
                 Limited Time Only
               </Badge>
@@ -105,22 +105,22 @@ export default function SalePage() {
 
         {/* Flash Sale Section */}
         {flashSaleProducts.length > 0 && (
-          <section className="bg-gradient-to-r from-red-50 to-orange-50 py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <Card className="mb-8 border-red-200 bg-gradient-to-r from-red-500 to-pink-500 text-white">
+          <section className="bg-gradient-to-r from-red-50 to-orange-50 py-8 md:py-12">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+              <Card className="mb-6 md:mb-8 border-red-200 bg-gradient-to-r from-red-500 to-pink-500 text-white overflow-hidden">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/20 rounded-full">
-                        <Flame className="h-6 w-6" />
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                        <Flame className="h-5 w-5 md:h-6 md:w-6" />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl">⚡ Flash Sale</CardTitle>
-                        <p className="text-white/90">Grab these deals before they're gone!</p>
+                        <CardTitle className="text-lg md:text-xl lg:text-2xl">⚡ Flash Sale</CardTitle>
+                        <p className="text-sm md:text-base text-white/90">Grab these deals before they're gone!</p>
                       </div>
                     </div>
-                    <div className="text-center">
-                      <div className="flex items-center gap-2 text-2xl font-bold mb-1">
+                    <div className="text-center hidden sm:block">
+                      <div className="flex items-center gap-1 md:gap-2 text-xl md:text-2xl font-bold mb-1">
                         <div className="bg-white/20 px-3 py-1 rounded">
                           {formatTime(timeLeft.hours)}
                         </div>
@@ -133,12 +133,12 @@ export default function SalePage() {
                           {formatTime(timeLeft.seconds)}
                         </div>
                       </div>
-                      <p className="text-sm text-white/80">Hours : Minutes : Seconds</p>
+                      <p className="text-xs md:text-sm text-white/80">Hours : Minutes : Seconds</p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <CardContent className="px-3 md:px-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
                     {flashSaleProducts.map((product) => (
                       <div key={product._id} className="bg-white rounded-lg p-3 relative overflow-hidden">
                         <div className="absolute top-2 left-2 z-10">
@@ -167,32 +167,32 @@ export default function SalePage() {
         )}
 
         {/* Sale Categories */}
-        <section className="py-12">
+        <section className="py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <Card className="bg-gradient-to-br from-blue-500 to-purple-600 text-white hover-elevate cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <ShoppingBag className="h-12 w-12 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Fashion Sale</h3>
-                  <p className="text-white/90 mb-4">Up to 60% off on clothing</p>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+              <Card className="bg-gradient-to-br from-blue-500 to-purple-600 text-white hover-elevate cursor-pointer overflow-hidden">
+                <CardContent className="p-4 md:p-6 text-center">
+                  <ShoppingBag className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-lg md:text-xl font-bold mb-2">Fashion Sale</h3>
+                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 60% off on clothing</p>
                   <Badge className="bg-white text-blue-600">2000+ Items</Badge>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-500 to-teal-600 text-white hover-elevate cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <Percent className="h-12 w-12 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Clearance Sale</h3>
-                  <p className="text-white/90 mb-4">Up to 70% off selected items</p>
+              <Card className="bg-gradient-to-br from-green-500 to-teal-600 text-white hover-elevate cursor-pointer overflow-hidden">
+                <CardContent className="p-4 md:p-6 text-center">
+                  <Percent className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-lg md:text-xl font-bold mb-2">Clearance Sale</h3>
+                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 70% off selected items</p>
                   <Badge className="bg-white text-green-600">Limited Stock</Badge>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white hover-elevate cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <TrendingDown className="h-12 w-12 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">End of Season</h3>
-                  <p className="text-white/90 mb-4">Up to 50% off winter collection</p>
+              <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white hover-elevate cursor-pointer overflow-hidden">
+                <CardContent className="p-4 md:p-6 text-center">
+                  <TrendingDown className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-lg md:text-xl font-bold mb-2">End of Season</h3>
+                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 50% off winter collection</p>
                   <Badge className="bg-white text-orange-600">Trending</Badge>
                 </CardContent>
               </Card>
@@ -201,11 +201,11 @@ export default function SalePage() {
         </section>
 
         {/* All Sale Products */}
-        <section className="py-12 bg-muted/30">
+        <section className="py-8 md:py-12 bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
               <div>
-                <h2 className="text-3xl font-bold mb-2">All Sale Items</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">All Sale Items</h2>
                 <p className="text-muted-foreground">
                   {isLoading ? "Loading..." : `${saleProducts.length} products on sale`}
                 </p>
@@ -279,24 +279,24 @@ export default function SalePage() {
         </section>
 
         {/* Sale Stats */}
-        <section className="py-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <section className="py-8 md:py-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
               <div>
-                <div className="text-4xl font-bold mb-2">70%</div>
-                <p className="text-white/90">Max Discount</p>
+                <div className="text-3xl md:text-4xl font-bold mb-2">70%</div>
+                <p className="text-sm md:text-base text-white/90">Max Discount</p>
               </div>
               <div>
-                <div className="text-4xl font-bold mb-2">{saleProducts.length}+</div>
-                <p className="text-white/90">Items on Sale</p>
+                <div className="text-3xl md:text-4xl font-bold mb-2">{saleProducts.length}+</div>
+                <p className="text-sm md:text-base text-white/90">Items on Sale</p>
               </div>
               <div>
-                <div className="text-4xl font-bold mb-2">24h</div>
-                <p className="text-white/90">Flash Sale Duration</p>
+                <div className="text-3xl md:text-4xl font-bold mb-2">24h</div>
+                <p className="text-sm md:text-base text-white/90">Flash Sale Duration</p>
               </div>
               <div>
-                <div className="text-4xl font-bold mb-2">Free</div>
-                <p className="text-white/90">Shipping on ₹4149+</p>
+                <div className="text-3xl md:text-4xl font-bold mb-2">Free</div>
+                <p className="text-sm md:text-base text-white/90">Shipping on ₹1000+</p>
               </div>
             </div>
           </div>

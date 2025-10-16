@@ -55,15 +55,15 @@ const SiteSettingsSchema: Schema = new Schema(
     },
     freeDeliveryThreshold: {
       type: Number,
-      default: 50,
+      default: 1000,
     },
     standardShippingCost: {
       type: Number,
-      default: 5,
+      default: 50,
     },
     expressShippingCost: {
       type: Number,
-      default: 15,
+      default: 150,
     },
     saleEnabled: {
       type: Boolean,

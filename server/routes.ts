@@ -16,6 +16,7 @@ import Review from "./models/Review";
 import Coupon from "./models/Coupon";
 import Banner from "./models/Banner";
 import SiteSettings from "./models/SiteSettings";
+import SaleConfig from "./models/SaleConfig";
 
 export async function registerRoutes(app: express.Application): Promise<Server> {
   
@@ -1854,6 +1855,183 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to bulk update sale status" });
+    }
+  });
+
+  // ==================== TRENDING & BEST SELLING ROUTES ====================
+  
+  // Get Trending Products (Public)
+  app.get("/api/products/trending", async (req: Request, res: Response) => {
+    try {
+      const { limit = 12 } = req.query;
+      const products = await Product.find({ isTrending: true, isActive: true })
+        .populate('categoryId', 'name')
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
+      
+      res.json({ products });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch trending products" });
+    }
+  });
+
+  // Get Best Selling Products (Public)
+  app.get("/api/products/best-selling", async (req: Request, res: Response) => {
+    try {
+      const { limit = 12 } = req.query;
+      const products = await Product.find({ isBestSelling: true, isActive: true })
+        .populate('categoryId', 'name')
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
+      
+      res.json({ products });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch best selling products" });
+    }
+  });
+
+  // Toggle Product Trending Status (Admin)
+  app.patch("/api/admin/products/:id/trending", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { isTrending } = req.body;
+      
+      const product = await Product.findByIdAndUpdate(
+        id,
+        { isTrending: isTrending },
+        { new: true }
+      );
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ 
+        product, 
+        message: `Product ${isTrending ? 'marked as' : 'removed from'} trending successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update trending status" });
+    }
+  });
+
+  // Toggle Product Best Selling Status (Admin)
+  app.patch("/api/admin/products/:id/best-selling", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { isBestSelling } = req.body;
+      
+      const product = await Product.findByIdAndUpdate(
+        id,
+        { isBestSelling: isBestSelling },
+        { new: true }
+      );
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ 
+        product, 
+        message: `Product ${isBestSelling ? 'marked as' : 'removed from'} best selling successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update best selling status" });
+    }
+  });
+
+  // Bulk Update Trending Status (Admin)
+  app.post("/api/admin/products/bulk-trending", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { productIds, isTrending } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+      
+      await Product.updateMany(
+        { _id: { $in: productIds } },
+        { $set: { isTrending: isTrending } }
+      );
+      
+      res.json({ 
+        message: `${productIds.length} products ${isTrending ? 'marked as' : 'removed from'} trending successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to bulk update trending status" });
+    }
+  });
+
+  // Bulk Update Best Selling Status (Admin)
+  app.post("/api/admin/products/bulk-best-selling", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { productIds, isBestSelling } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+      
+      await Product.updateMany(
+        { _id: { $in: productIds } },
+        { $set: { isBestSelling: isBestSelling } }
+      );
+      
+      res.json({ 
+        message: `${productIds.length} products ${isBestSelling ? 'marked as' : 'removed from'} best selling successfully` 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to bulk update best selling status" });
+    }
+  });
+
+  // ==================== SALE PAGE CONFIG ROUTES ====================
+  
+  // Get Sale Page Config (Public)
+  app.get("/api/sale-config", async (req: Request, res: Response) => {
+    try {
+      let config = await SaleConfig.findOne({ isActive: true });
+      
+      // Create default config if none exists
+      if (!config) {
+        config = await SaleConfig.create({});
+      }
+      
+      res.json({ config });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sale config" });
+    }
+  });
+
+  // Get Sale Page Config (Admin)
+  app.get("/api/admin/sale-config", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      let config = await SaleConfig.findOne();
+      
+      // Create default config if none exists
+      if (!config) {
+        config = await SaleConfig.create({});
+      }
+      
+      res.json({ config });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sale config" });
+    }
+  });
+
+  // Update Sale Page Config
+  app.patch("/api/admin/sale-config", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      let config = await SaleConfig.findOne();
+      
+      if (!config) {
+        config = await SaleConfig.create(req.body);
+      } else {
+        config = await SaleConfig.findOneAndUpdate({}, req.body, { new: true });
+      }
+      
+      res.json({ config, message: "Sale page config updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update sale config" });
     }
   });
 

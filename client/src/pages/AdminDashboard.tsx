@@ -44,6 +44,9 @@ import {
   X,
   Search,
   Megaphone,
+  Flame,
+  TrendingUp as TrendingUpIcon,
+  Crown,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
@@ -77,12 +80,25 @@ import { SalesAnalytics } from "@/components/admin/SalesAnalytics";
 import { BannerManagement } from "@/components/admin/BannerManagement";
 import { SettingsManagement } from "@/components/admin/SettingsManagement";
 import { SaleManagement } from "@/components/admin/SaleManagement";
+import { SalePageManagement } from "@/components/admin/SalePageManagement";
+import { TrendingManagement } from "@/components/admin/TrendingManagement";
+import { BestSellingManagement } from "@/components/admin/BestSellingManagement";
 import { 
   useAdminBanners,
   useCreateBanner,
   useUpdateBanner,
   useDeleteBanner
 } from "@/hooks/useBanners";
+import {
+  useAdminSaleConfig,
+  useUpdateSaleConfig
+} from "@/hooks/useSaleConfig";
+import {
+  useToggleTrending,
+  useBulkToggleTrending,
+  useToggleBestSelling,
+  useBulkToggleBestSelling
+} from "@/hooks/useTrendingProducts";
 import {
   useAdminSettings,
   useUpdateSettings,
@@ -96,11 +112,14 @@ const menuItems = [
   { title: "Sales Analytics", icon: TrendingUp, id: "sales" },
   { title: "Products", icon: Package, id: "products" },
   { title: "Sale Management", icon: Tag, id: "sale-management" },
+  { title: "Trending Products", icon: TrendingUpIcon, id: "trending" },
+  { title: "Best Selling", icon: Crown, id: "best-selling" },
   { title: "Categories", icon: FolderTree, id: "categories" },
   { title: "Orders", icon: ShoppingCart, id: "orders" },
   { title: "Customers", icon: Users, id: "customers" },
   { title: "Coupons", icon: Tag, id: "coupons" },
   { title: "Banners", icon: Megaphone, id: "banners" },
+  { title: "Sale Page", icon: Flame, id: "sale-page" },
   { title: "Settings", icon: Settings, id: "settings" },
 ];
 
@@ -116,6 +135,7 @@ export default function AdminDashboard() {
   const { data: topProductsData } = useTopProducts();
   const { data: bannersData } = useAdminBanners();
   const { data: settingsData } = useAdminSettings();
+  const { data: saleConfigData } = useAdminSaleConfig();
   
   // Mutations
   const createProduct = useCreateProduct();
@@ -134,6 +154,11 @@ export default function AdminDashboard() {
   const updateSettings = useUpdateSettings();
   const toggleProductSale = useToggleProductSale();
   const bulkToggleSale = useBulkToggleSale();
+  const updateSaleConfig = useUpdateSaleConfig();
+  const toggleTrending = useToggleTrending();
+  const bulkToggleTrending = useBulkToggleTrending();
+  const toggleBestSelling = useToggleBestSelling();
+  const bulkToggleBestSelling = useBulkToggleBestSelling();
   
   // State
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -455,6 +480,89 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to bulk update sale status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Sale page config handler
+  const handleUpdateSaleConfig = async (data: any) => {
+    try {
+      await updateSaleConfig.mutateAsync(data);
+      toast({
+        title: "Sale Page Updated",
+        description: "Sale page configuration has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update sale page config. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Trending handlers
+  const handleToggleTrending = async (id: string, isTrending: boolean) => {
+    try {
+      await toggleTrending.mutateAsync({ id, isTrending });
+      toast({
+        title: isTrending ? "Marked as Trending" : "Removed from Trending",
+        description: `Product has been ${isTrending ? 'marked as' : 'removed from'} trending successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update trending status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkToggleTrending = async (productIds: string[], isTrending: boolean) => {
+    try {
+      await bulkToggleTrending.mutateAsync({ productIds, isTrending });
+      toast({
+        title: "Bulk Update Complete",
+        description: `${productIds.length} products ${isTrending ? 'marked as' : 'removed from'} trending successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to bulk update trending status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Best Selling handlers
+  const handleToggleBestSelling = async (id: string, isBestSelling: boolean) => {
+    try {
+      await toggleBestSelling.mutateAsync({ id, isBestSelling });
+      toast({
+        title: isBestSelling ? "Marked as Best Selling" : "Removed from Best Selling",
+        description: `Product has been ${isBestSelling ? 'marked as' : 'removed from'} best selling successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update best selling status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkToggleBestSelling = async (productIds: string[], isBestSelling: boolean) => {
+    try {
+      await bulkToggleBestSelling.mutateAsync({ productIds, isBestSelling });
+      toast({
+        title: "Bulk Update Complete",
+        description: `${productIds.length} products ${isBestSelling ? 'marked as' : 'removed from'} best selling successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to bulk update best selling status. Please try again.",
         variant: "destructive",
       });
     }
@@ -804,6 +912,16 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {activeTab === "sale-page" && saleConfigData?.config && (
+              <div>
+                <SalePageManagement
+                  config={saleConfigData.config}
+                  onUpdateConfig={handleUpdateSaleConfig}
+                  isLoading={updateSaleConfig.isPending}
+                />
+              </div>
+            )}
+
             {activeTab === "sale-management" && (
               <div>
                 <SaleManagement
@@ -811,6 +929,28 @@ export default function AdminDashboard() {
                   onToggleSale={handleToggleSale}
                   onBulkToggleSale={handleBulkToggleSale}
                   isLoading={toggleProductSale.isPending || bulkToggleSale.isPending}
+                />
+              </div>
+            )}
+
+            {activeTab === "trending" && (
+              <div>
+                <TrendingManagement
+                  products={products}
+                  onToggleTrending={handleToggleTrending}
+                  onBulkToggleTrending={handleBulkToggleTrending}
+                  isLoading={toggleTrending.isPending || bulkToggleTrending.isPending}
+                />
+              </div>
+            )}
+
+            {activeTab === "best-selling" && (
+              <div>
+                <BestSellingManagement
+                  products={products}
+                  onToggleBestSelling={handleToggleBestSelling}
+                  onBulkToggleBestSelling={handleBulkToggleBestSelling}
+                  isLoading={toggleBestSelling.isPending || bulkToggleBestSelling.isPending}
                 />
               </div>
             )}

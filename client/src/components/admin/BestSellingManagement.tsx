@@ -4,30 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tag, Search, Package } from "lucide-react";
+import { Crown, Search, Package, Star } from "lucide-react";
 
 interface Product {
   _id: string;
   name: string;
   price: number;
   images: string[];
-  isOnSale?: boolean;
+  isBestSelling?: boolean;
   categoryId?: { name: string };
 }
 
-interface SaleManagementProps {
+interface BestSellingManagementProps {
   products: Product[];
-  onToggleSale: (id: string, isOnSale: boolean) => Promise<void>;
-  onBulkToggleSale: (productIds: string[], isOnSale: boolean) => Promise<void>;
+  onToggleBestSelling: (id: string, isBestSelling: boolean) => Promise<void>;
+  onBulkToggleBestSelling: (productIds: string[], isBestSelling: boolean) => Promise<void>;
   isLoading?: boolean;
 }
 
-export function SaleManagement({
+export function BestSellingManagement({
   products,
-  onToggleSale,
-  onBulkToggleSale,
+  onToggleBestSelling,
+  onBulkToggleBestSelling,
   isLoading = false
-}: SaleManagementProps) {
+}: BestSellingManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -51,27 +51,27 @@ export function SaleManagement({
     }
   };
 
-  const handleBulkAddToSale = async () => {
+  const handleBulkAddToBestSelling = async () => {
     if (selectedProducts.length === 0) return;
-    await onBulkToggleSale(selectedProducts, true);
+    await onBulkToggleBestSelling(selectedProducts, true);
     setSelectedProducts([]);
   };
 
-  const handleBulkRemoveFromSale = async () => {
+  const handleBulkRemoveFromBestSelling = async () => {
     if (selectedProducts.length === 0) return;
-    await onBulkToggleSale(selectedProducts, false);
+    await onBulkToggleBestSelling(selectedProducts, false);
     setSelectedProducts([]);
   };
 
-  const onSaleProducts = products.filter(p => p.isOnSale).length;
+  const bestSellingProducts = products.filter(p => p.isBestSelling).length;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Sale Management</h2>
+          <h2 className="text-2xl font-bold">Best Selling Products</h2>
           <p className="text-muted-foreground">
-            Manage which products appear on the sale page ({onSaleProducts} products on sale)
+            Manage which products appear in the best selling section ({bestSellingProducts} best sellers)
           </p>
         </div>
       </div>
@@ -96,19 +96,19 @@ export function SaleManagement({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleBulkAddToSale}
+              onClick={handleBulkAddToBestSelling}
               disabled={isLoading}
             >
-              <Tag className="h-4 w-4 mr-2" />
-              Add to Sale
+              <Crown className="h-4 w-4 mr-2" />
+              Mark as Best Selling
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={handleBulkRemoveFromSale}
+              onClick={handleBulkRemoveFromBestSelling}
               disabled={isLoading}
             >
-              Remove from Sale
+              Remove from Best Selling
             </Button>
           </div>
         )}
@@ -166,9 +166,10 @@ export function SaleManagement({
               </div>
 
               <div className="w-32">
-                {product.isOnSale ? (
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    On Sale
+                {product.isBestSelling ? (
+                  <Badge className="bg-yellow-500 hover:bg-yellow-600">
+                    <Star className="h-3 w-3 mr-1 fill-current" />
+                    Best Selling
                   </Badge>
                 ) : (
                   <Badge variant="secondary">
@@ -180,11 +181,11 @@ export function SaleManagement({
               <div className="w-32">
                 <Button
                   size="sm"
-                  variant={product.isOnSale ? "outline" : "default"}
-                  onClick={() => onToggleSale(product._id, !product.isOnSale)}
+                  variant={product.isBestSelling ? "outline" : "default"}
+                  onClick={() => onToggleBestSelling(product._id, !product.isBestSelling)}
                   disabled={isLoading}
                 >
-                  {product.isOnSale ? "Remove" : "Add to Sale"}
+                  {product.isBestSelling ? "Remove" : "Mark Best Selling"}
                 </Button>
               </div>
             </div>

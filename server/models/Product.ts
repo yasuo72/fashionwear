@@ -24,6 +24,8 @@ export interface IProduct extends Document {
   isActive: boolean;
   isFeatured: boolean;
   isOnSale?: boolean;
+  isTrending?: boolean;
+  isBestSelling?: boolean;
 }
 
 const ProductVariantSchema = new Schema({
@@ -106,6 +108,14 @@ const ProductSchema: Schema = new Schema(
       default: false,
     },
     isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+    isTrending: {
+      type: Boolean,
+      default: false,
+    },
+    isBestSelling: {
       type: Boolean,
       default: false,
     },

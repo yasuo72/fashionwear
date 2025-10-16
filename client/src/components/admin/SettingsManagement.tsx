@@ -114,7 +114,7 @@ export function SettingsManagement({
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="freeDeliveryThreshold">Free Delivery Threshold ($)</Label>
+              <Label htmlFor="freeDeliveryThreshold">Free Delivery Threshold (₹)</Label>
               <Input
                 id="freeDeliveryThreshold"
                 type="number"
@@ -124,11 +124,11 @@ export function SettingsManagement({
                 step="1"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Orders above this amount get free delivery
+                Orders above ₹{form.freeDeliveryThreshold} get free delivery
               </p>
             </div>
             <div>
-              <Label htmlFor="standardShippingCost">Standard Shipping ($)</Label>
+              <Label htmlFor="standardShippingCost">Standard Shipping (₹)</Label>
               <Input
                 id="standardShippingCost"
                 type="number"
@@ -139,7 +139,7 @@ export function SettingsManagement({
               />
             </div>
             <div>
-              <Label htmlFor="expressShippingCost">Express Shipping ($)</Label>
+              <Label htmlFor="expressShippingCost">Express Shipping (₹)</Label>
               <Input
                 id="expressShippingCost"
                 type="number"

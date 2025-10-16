@@ -7,16 +7,21 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/hooks/useProducts";
-import { Sparkles, TrendingUp, Shield, Truck, Star } from "lucide-react";
+import { useTrendingProducts, useBestSellingProducts } from "@/hooks/useTrendingProducts";
+import { Sparkles, TrendingUp, Shield, Truck, Star, Flame, Crown } from "lucide-react";
 
 export default function HomePage() {
   const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
   const { data: productsData, isLoading: productsLoading } = useProducts({ limit: 8 });
   const { data: featuredData, isLoading: featuredLoading } = useProducts({ limit: 4 });
+  const { data: trendingData, isLoading: trendingLoading } = useTrendingProducts(8);
+  const { data: bestSellingData, isLoading: bestSellingLoading } = useBestSellingProducts(8);
 
   const categories = categoriesData?.categories || [];
   const products = productsData?.products || [];
   const featured = featuredData?.products || [];
+  const trending = trendingData?.products || [];
+  const bestSelling = bestSellingData?.products || [];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -62,6 +67,116 @@ export default function HomePage() {
             )}
           </div>
         </section>
+
+        {/* Trending Products */}
+        {trending.length > 0 && (
+          <section className="relative py-16 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950/30 dark:via-red-950/30 dark:to-pink-950/30" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-orange-300 dark:bg-orange-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob" />
+            
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center animate-pulse">
+                      <Flame className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                      Trending Now
+                    </h2>
+                  </div>
+                  <p className="text-muted-foreground text-lg">What everyone's loving right now</p>
+                </div>
+                <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white text-lg px-6 py-2 shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-orange-500/60 hover:scale-105 transition-all">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Hot
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {trendingLoading ? (
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="h-80 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 animate-pulse rounded-2xl" />
+                  ))
+                ) : (
+                  trending.slice(0, 8).map((product, index) => (
+                    <div
+                      key={product._id}
+                      className="group hover:scale-105 hover:rotate-1 transition-all duration-300"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <ProductCard 
+                        id={product.slug}
+                        productId={product._id}
+                        name={product.name}
+                        price={product.price}
+                        originalPrice={product.originalPrice}
+                        image={product.images[0]}
+                        rating={product.rating}
+                        reviews={product.reviewCount}
+                        discount={product.discount}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Best Selling Products */}
+        {bestSelling.length > 0 && (
+          <section className="relative py-16 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-950/30 dark:via-amber-950/30 dark:to-orange-950/30" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+            
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-orange-600 flex items-center justify-center">
+                      <Crown className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                      Best Sellers
+                    </h2>
+                  </div>
+                  <p className="text-muted-foreground text-lg">Top picks from our customers</p>
+                </div>
+                <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-lg px-6 py-2 shadow-lg shadow-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/60 hover:scale-105 transition-all">
+                  <Star className="w-4 h-4 mr-2 fill-current" />
+                  Popular
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {bestSellingLoading ? (
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="h-80 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 animate-pulse rounded-2xl" />
+                  ))
+                ) : (
+                  bestSelling.slice(0, 8).map((product, index) => (
+                    <div
+                      key={product._id}
+                      className="group hover:scale-105 hover:rotate-1 transition-all duration-300"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <ProductCard 
+                        id={product.slug}
+                        productId={product._id}
+                        name={product.name}
+                        price={product.price}
+                        originalPrice={product.originalPrice}
+                        image={product.images[0]}
+                        rating={product.rating}
+                        reviews={product.reviewCount}
+                        discount={product.discount}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Featured Products - Futuristic Design */}
         <section className="relative py-20 overflow-hidden">

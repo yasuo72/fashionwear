@@ -4,30 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tag, Search, Package } from "lucide-react";
+import { TrendingUp, Search, Package, Flame } from "lucide-react";
 
 interface Product {
   _id: string;
   name: string;
   price: number;
   images: string[];
-  isOnSale?: boolean;
+  isTrending?: boolean;
   categoryId?: { name: string };
 }
 
-interface SaleManagementProps {
+interface TrendingManagementProps {
   products: Product[];
-  onToggleSale: (id: string, isOnSale: boolean) => Promise<void>;
-  onBulkToggleSale: (productIds: string[], isOnSale: boolean) => Promise<void>;
+  onToggleTrending: (id: string, isTrending: boolean) => Promise<void>;
+  onBulkToggleTrending: (productIds: string[], isTrending: boolean) => Promise<void>;
   isLoading?: boolean;
 }
 
-export function SaleManagement({
+export function TrendingManagement({
   products,
-  onToggleSale,
-  onBulkToggleSale,
+  onToggleTrending,
+  onBulkToggleTrending,
   isLoading = false
-}: SaleManagementProps) {
+}: TrendingManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -51,27 +51,27 @@ export function SaleManagement({
     }
   };
 
-  const handleBulkAddToSale = async () => {
+  const handleBulkAddToTrending = async () => {
     if (selectedProducts.length === 0) return;
-    await onBulkToggleSale(selectedProducts, true);
+    await onBulkToggleTrending(selectedProducts, true);
     setSelectedProducts([]);
   };
 
-  const handleBulkRemoveFromSale = async () => {
+  const handleBulkRemoveFromTrending = async () => {
     if (selectedProducts.length === 0) return;
-    await onBulkToggleSale(selectedProducts, false);
+    await onBulkToggleTrending(selectedProducts, false);
     setSelectedProducts([]);
   };
 
-  const onSaleProducts = products.filter(p => p.isOnSale).length;
+  const trendingProducts = products.filter(p => p.isTrending).length;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Sale Management</h2>
+          <h2 className="text-2xl font-bold">Trending Products</h2>
           <p className="text-muted-foreground">
-            Manage which products appear on the sale page ({onSaleProducts} products on sale)
+            Manage which products appear in the trending section ({trendingProducts} products trending)
           </p>
         </div>
       </div>
@@ -96,19 +96,19 @@ export function SaleManagement({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleBulkAddToSale}
+              onClick={handleBulkAddToTrending}
               disabled={isLoading}
             >
-              <Tag className="h-4 w-4 mr-2" />
-              Add to Sale
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Mark as Trending
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={handleBulkRemoveFromSale}
+              onClick={handleBulkRemoveFromTrending}
               disabled={isLoading}
             >
-              Remove from Sale
+              Remove from Trending
             </Button>
           </div>
         )}
@@ -166,9 +166,10 @@ export function SaleManagement({
               </div>
 
               <div className="w-32">
-                {product.isOnSale ? (
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    On Sale
+                {product.isTrending ? (
+                  <Badge className="bg-orange-500 hover:bg-orange-600">
+                    <Flame className="h-3 w-3 mr-1" />
+                    Trending
                   </Badge>
                 ) : (
                   <Badge variant="secondary">
@@ -180,11 +181,11 @@ export function SaleManagement({
               <div className="w-32">
                 <Button
                   size="sm"
-                  variant={product.isOnSale ? "outline" : "default"}
-                  onClick={() => onToggleSale(product._id, !product.isOnSale)}
+                  variant={product.isTrending ? "outline" : "default"}
+                  onClick={() => onToggleTrending(product._id, !product.isTrending)}
                   disabled={isLoading}
                 >
-                  {product.isOnSale ? "Remove" : "Add to Sale"}
+                  {product.isTrending ? "Remove" : "Mark Trending"}
                 </Button>
               </div>
             </div>
