@@ -51,18 +51,20 @@ export function Navbar() {
   return (
     <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       scrolled 
-        ? 'bg-background/80 backdrop-blur-xl shadow-lg shadow-purple-500/10 border-b border-purple-500/20' 
-        : 'bg-background/60 backdrop-blur-lg border-b border-border/40'
+        ? 'bg-background/70 backdrop-blur-xl shadow-lg shadow-purple-500/10 border-b border-purple-500/20' 
+        : 'bg-background/40 backdrop-blur-lg border-b border-border/30'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
-          <Link href="/" className="flex items-center group">
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-2 sm:gap-4 min-w-max sm:min-w-0">
+          <Link href="/" className="flex items-center group flex-shrink-0">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-              <h1 className="relative text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text text-transparent animate-gradient">
-                <span className="inline-flex items-center gap-2">
-                  <Sparkles className="w-6 h-6 text-yellow-500 animate-pulse" />
-                  FashionHub
+              <h1 className="relative text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text text-transparent animate-gradient">
+                <span className="inline-flex items-center gap-1 sm:gap-2">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
+                  <span className="hidden xs:inline">FashionHub</span>
+                  <span className="xs:hidden">FH</span>
                 </span>
               </h1>
             </div>
@@ -86,15 +88,15 @@ export function Navbar() {
             </form>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link href="/wishlist">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <Link href="/wishlist" className="flex-shrink-0">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative group hover:bg-pink-500/10 hover:scale-110 transition-all duration-300" 
+                className="relative group hover:bg-pink-500/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
                 data-testid="button-wishlist"
               >
-                <Heart className="h-5 w-5 text-pink-500 group-hover:fill-pink-500 transition-all duration-300" />
+                <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500 group-hover:fill-pink-500 transition-all duration-300" />
                 {wishlistCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-gradient-to-r from-pink-600 to-red-600 text-white shadow-lg shadow-pink-500/50 animate-pulse" data-testid="badge-wishlist-count">
                     {wishlistCount}
@@ -103,14 +105,14 @@ export function Navbar() {
               </Button>
             </Link>
 
-            <Link href="/cart">
+            <Link href="/cart" className="flex-shrink-0">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative group hover:bg-purple-500/10 hover:scale-110 transition-all duration-300" 
+                className="relative group hover:bg-purple-500/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
                 data-testid="button-cart"
               >
-                <ShoppingCart className="h-5 w-5 text-purple-500 group-hover:text-purple-600 transition-colors duration-300" />
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 group-hover:text-purple-600 transition-colors duration-300" />
                 {cartCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50 animate-pulse" data-testid="badge-cart-count">
                     {cartCount}
@@ -122,8 +124,8 @@ export function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full hover:scale-110 transition-all duration-300" data-testid="button-user">
-                    <Avatar className="h-9 w-9 ring-2 ring-purple-500/30 hover:ring-purple-500/60 hover:ring-4 transition-all duration-300">
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:scale-110 transition-all duration-300 flex-shrink-0" data-testid="button-user">
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9 ring-2 ring-purple-500/30 hover:ring-purple-500/60 hover:ring-4 transition-all duration-300">
                       <AvatarImage 
                         src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} 
                         alt={`${user.firstName} ${user.lastName}`}
@@ -187,27 +189,30 @@ export function Navbar() {
             ) : (
               <Button 
                 asChild 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4 flex-shrink-0"
               >
-                <Link href="/login" className="flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Login
+                <Link href="/login" className="flex items-center gap-1 sm:gap-2">
+                  <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Login</span>
                 </Link>
               </Button>
             )}
 
-            <ThemeToggle />
+            <div className="flex-shrink-0">
+              <ThemeToggle />
+            </div>
 
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="button-mobile-menu"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </Button>
           </div>
+        </div>
         </div>
 
         {mobileMenuOpen && (
@@ -283,7 +288,7 @@ export function Navbar() {
         )}
       </div>
 
-      <div className="border-t border-purple-500/10 bg-gradient-to-r from-purple-50/50 via-pink-50/50 to-yellow-50/50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-yellow-950/20 hidden md:block backdrop-blur-sm">
+      <div className="border-t border-purple-500/10 bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-yellow-50/30 dark:from-purple-950/10 dark:via-pink-950/10 dark:to-yellow-950/10 hidden md:block backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-12 items-center justify-center gap-8 text-sm font-medium">
             <Link 
