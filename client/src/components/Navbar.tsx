@@ -62,7 +62,7 @@ export function Navbar() {
                 <span className="inline-flex items-center gap-1 sm:gap-2">
                   <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
                   <span className="hidden xs:inline">FashionHub</span>
-                  <span className="xs:hidden">FH</span>
+                  <span className="xs:hidden">FashionHub</span>
                 </span>
               </h1>
             </div>
