@@ -548,9 +548,16 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       const query: any = { isActive: true };
 
       if (category) {
-        const cat = await Category.findOne({ slug: category });
+        const cat = await Category.findOne({ slug: category, isActive: true });
         if (cat) {
-          query.categoryId = cat._id;
+          // Include products from this category and its immediate active subcategories
+          const subcategories = await Category.find({
+            parentId: cat._id,
+            isActive: true,
+          }).select("_id");
+
+          const categoryIds = [cat._id, ...subcategories.map((sub) => sub._id)];
+          query.categoryId = { $in: categoryIds };
         }
       }
 
@@ -1694,7 +1701,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // Create Banner
   app.post("/api/admin/banners", authenticate, adminAuth, async (req: AuthRequest, res: Response) => {
     try {
-      const { text, type, location, isActive } = req.body;
+      const { text, type, location, isActive, imageUrl } = req.body;
       
       if (!text || !text.trim()) {
         return res.status(400).json({ message: "Banner text is required" });
@@ -1704,6 +1711,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         text: text.trim(),
         type: type || 'badge',
         location: location || 'hero',
+        imageUrl: imageUrl || '',
         isActive: isActive !== undefined ? isActive : true,
       });
       

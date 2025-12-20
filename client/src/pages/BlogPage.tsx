@@ -364,7 +364,7 @@ export default function BlogPage() {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 py-20 overflow-hidden">
+        <section className="relative bg-muted py-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center max-w-3xl mx-auto">
@@ -372,7 +372,7 @@ export default function BlogPage() {
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium">Fashion Insights & Inspiration</span>
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">
                 FashionFusion Blog
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
@@ -553,7 +553,7 @@ export default function BlogPage() {
                 </Card>
 
                 {/* Newsletter */}
-                <Card className="bg-gradient-to-br from-primary/10 to-purple-500/10">
+                <Card className="bg-card border border-primary/10">
                   <CardContent className="pt-6">
                     <Sparkles className="h-8 w-8 text-primary mb-3" />
                     <h3 className="font-semibold mb-2">Stay Updated</h3>

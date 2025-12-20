@@ -49,18 +49,18 @@ export function Navbar() {
   return (
     <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       scrolled 
-        ? 'bg-background/70 backdrop-blur-xl shadow-lg shadow-purple-500/10 border-b border-purple-500/20' 
-        : 'bg-background/40 backdrop-blur-lg border-b border-border/30'
+        ? 'bg-background/90 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-border/60' 
+        : 'bg-background/70 backdrop-blur-lg border-b border-border/40'
     }`}>
       <div className="w-full overflow-x-auto scrollbar-hide">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-2 sm:gap-4 min-w-max sm:min-w-0">
           <Link href="/" className="flex items-center group flex-shrink-0">
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-              <h1 className="relative text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text text-transparent animate-gradient">
+              <div className="absolute -inset-1 bg-primary/40 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+              <h1 className="relative text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                 <span className="inline-flex items-center gap-1 sm:gap-2">
-                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   <span className="hidden xs:inline">FashionHub</span>
                   <span className="xs:hidden">FashionHub</span>
                 </span>
@@ -70,13 +70,13 @@ export function Navbar() {
 
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
             <form onSubmit={handleSearch} className="relative w-full group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+              <div className="absolute -inset-0.5 bg-primary/20 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-500 group-hover:text-pink-500 transition-colors duration-300" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors duration-300" />
                 <Input
                   type="search"
                   placeholder="Search for products, brands, and more..."
-                  className="pl-10 w-full bg-background/50 border-purple-500/30 focus:border-pink-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="pl-10 w-full bg-background/60 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
@@ -91,12 +91,12 @@ export function Navbar() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative group hover:bg-pink-500/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
+                className="relative group hover:bg-primary/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
                 data-testid="button-wishlist"
               >
-                <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500 group-hover:fill-pink-500 transition-all duration-300" />
+                <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:fill-primary transition-all duration-300" />
                 {wishlistCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-gradient-to-r from-pink-600 to-red-600 text-white shadow-lg shadow-pink-500/50 animate-pulse" data-testid="badge-wishlist-count">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-black shadow-lg shadow-primary/40 animate-pulse" data-testid="badge-wishlist-count">
                     {wishlistCount}
                   </Badge>
                 )}
@@ -107,12 +107,12 @@ export function Navbar() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative group hover:bg-purple-500/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
+                className="relative group hover:bg-primary/10 hover:scale-110 transition-all duration-300 h-9 w-9 sm:h-10 sm:w-10" 
                 data-testid="button-cart"
               >
-                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 group-hover:text-purple-600 transition-colors duration-300" />
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:text-primary transition-colors duration-300" />
                 {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50 animate-pulse" data-testid="badge-cart-count">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-black shadow-lg shadow-primary/40 animate-pulse" data-testid="badge-cart-count">
                     {cartCount}
                   </Badge>
                 )}
@@ -123,7 +123,7 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:scale-110 transition-all duration-300 flex-shrink-0" data-testid="button-user">
-                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9 ring-2 ring-purple-500/30 hover:ring-purple-500/60 hover:ring-4 transition-all duration-300">
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9 ring-2 ring-primary/30 hover:ring-primary/60 hover:ring-4 transition-all duration-300">
                       <AvatarImage 
                         src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} 
                         alt={`${user.firstName} ${user.lastName}`}
@@ -187,7 +187,7 @@ export function Navbar() {
             ) : (
               <Button 
                 asChild 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4 flex-shrink-0"
+                className="bg-primary hover:bg-primary/90 text-black shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4 flex-shrink-0"
               >
                 <Link href="/login" className="flex items-center gap-1 sm:gap-2">
                   <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -203,51 +203,50 @@ export function Navbar() {
         </div>
         </div>
 
-        <div className="md:hidden border-t border-purple-500/20 bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-yellow-50/30 dark:from-purple-950/10 dark:via-pink-950/10 dark:to-yellow-950/10 backdrop-blur-sm">
+        <div className="md:hidden border-t border-border bg-muted/60 dark:bg-background/80 backdrop-blur-sm">
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 px-3 py-3 min-w-max">
               <Link 
                 href="/category/men" 
-                className="relative px-4 py-2 rounded-full bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-300 text-sm font-medium whitespace-nowrap"
+                className="relative px-4 py-2 rounded-full bg-card hover:bg-muted transition-all duration-300 text-sm font-medium whitespace-nowrap"
                 data-testid="mobile-link-men"
               >
                 Men
               </Link>
               <Link 
                 href="/category/women" 
-                className="relative px-4 py-2 rounded-full bg-pink-500/10 hover:bg-pink-500/20 transition-all duration-300 text-sm font-medium whitespace-nowrap"
+                className="relative px-4 py-2 rounded-full bg-card hover:bg-muted transition-all duration-300 text-sm font-medium whitespace-nowrap"
                 data-testid="mobile-link-women"
               >
                 Women
               </Link>
               <Link 
                 href="/category/kids" 
-                className="relative px-4 py-2 rounded-full bg-yellow-500/10 hover:bg-yellow-500/20 transition-all duration-300 text-sm font-medium whitespace-nowrap"
+                className="relative px-4 py-2 rounded-full bg-card hover:bg-muted transition-all duration-300 text-sm font-medium whitespace-nowrap"
                 data-testid="mobile-link-kids"
               >
                 Kids
               </Link>
               <Link 
                 href="/category/accessories" 
-                className="relative px-4 py-2 rounded-full bg-blue-500/10 hover:bg-blue-500/20 transition-all duration-300 text-sm font-medium whitespace-nowrap"
+                className="relative px-4 py-2 rounded-full bg-card hover:bg-muted transition-all duration-300 text-sm font-medium whitespace-nowrap"
                 data-testid="mobile-link-accessories"
               >
                 Accessories
               </Link>
               <Link 
                 href="/blog" 
-                className="relative px-4 py-2 rounded-full bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-300 text-sm font-medium whitespace-nowrap"
+                className="relative px-4 py-2 rounded-full bg-card hover:bg-muted transition-all duration-300 text-sm font-medium whitespace-nowrap"
                 data-testid="mobile-link-blog"
               >
                 Blog
               </Link>
               <Link 
                 href="/sales" 
-                className="relative px-4 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 hover:from-red-500/30 hover:to-orange-500/30 transition-all duration-300 text-sm font-bold whitespace-nowrap"
-                data-testid="mobile-link-sale"
+                className="relative px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-300 text-sm font-bold whitespace-nowrap"
               >
-                <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                <span className="text-primary flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
                   Sale
                 </span>
               </Link>
@@ -256,56 +255,56 @@ export function Navbar() {
         </div>
       </div>
 
-      <div className="border-t border-purple-500/10 bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-yellow-50/30 dark:from-purple-950/10 dark:via-pink-950/10 dark:to-yellow-950/10 hidden md:block backdrop-blur-sm">
+      <div className="border-t border-border bg-muted/60 dark:bg-background/80 hidden md:block backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-12 items-center justify-center gap-8 text-sm font-medium">
             <Link 
               href="/category/men" 
-              className="relative px-4 py-2 rounded-lg hover:bg-purple-500/10 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110 group" 
               data-testid="link-category-men"
             >
               <span className="relative z-10">Men</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
+              <span className="absolute inset-0 bg-primary/20 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
             </Link>
             <Link 
               href="/category/women" 
-              className="relative px-4 py-2 rounded-lg hover:bg-pink-500/10 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110 group" 
               data-testid="link-category-women"
             >
               <span className="relative z-10">Women</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
+              <span className="absolute inset-0 bg-primary/20 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
             </Link>
             <Link 
               href="/category/kids" 
-              className="relative px-4 py-2 rounded-lg hover:bg-yellow-500/10 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110 group" 
               data-testid="link-category-kids"
             >
               <span className="relative z-10">Kids</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
+              <span className="absolute inset-0 bg-primary/20 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
             </Link>
             <Link 
               href="/category/accessories" 
-              className="relative px-4 py-2 rounded-lg hover:bg-blue-500/10 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110 group" 
               data-testid="link-category-accessories"
             >
               <span className="relative z-10">Accessories</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
+              <span className="absolute inset-0 bg-primary/20 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
             </Link>
             <Link 
               href="/blog" 
-              className="relative px-4 py-2 rounded-lg hover:bg-purple-500/10 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110 group" 
               data-testid="link-blog"
             >
               <span className="relative z-10">Blog</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
+              <span className="absolute inset-0 bg-primary/20 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity"></span>
             </Link>
             <Link 
               href="/sales" 
-              className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 transition-all duration-300 hover:scale-110 group" 
+              className="relative px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:scale-110 group" 
               data-testid="link-sales"
             >
-              <span className="relative z-10 bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent font-bold flex items-center gap-1">
-                <Sparkles className="w-4 h-4 text-orange-500 animate-pulse" />
+              <span className="relative z-10 text-primary font-bold flex items-center gap-1">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                 Sale
               </span>
             </Link>

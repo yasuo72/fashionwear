@@ -25,19 +25,19 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[600px] h-[75vh] md:h-[80vh] max-h-[900px] w-full overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900">
+    <section className="relative w-full overflow-hidden bg-background border-b">
       {/* Animated Background Gradients */}
       <div className="absolute inset-0 overflow-hidden">
         <div 
-          className="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
+          className="absolute top-0 -left-4 w-96 h-96 bg-primary/40 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
           style={{ transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)` }}
         />
         <div 
-          className="absolute top-0 -right-4 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"
+          className="absolute top-0 -right-4 w-96 h-96 bg-secondary/40 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"
           style={{ transform: `translate(-${mousePosition.x}px, ${mousePosition.y}px)` }}
         />
         <div 
-          className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"
+          className="absolute -bottom-8 left-20 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"
           style={{ transform: `translate(${mousePosition.x}px, -${mousePosition.y}px)` }}
         />
       </div>
@@ -59,83 +59,94 @@ export function HeroSection() {
       </div>
 
       {/* Main Content */}
-      <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center py-4">
-        <div className="max-w-4xl z-10 w-full">
-          {/* Badge */}
-          {bannerText && (
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 mb-4 md:mb-6 animate-pulse-glow">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">
-                {bannerText}
-              </span>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+        <div className="grid gap-10 lg:grid-cols-2 items-center">
+          <div className="max-w-4xl z-10 w-full">
+            {/* Badge */}
+            {bannerText && (
+              <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full px-4 py-2 mb-4 md:mb-6 animate-pulse-glow">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium text-foreground">
+                  {bannerText}
+                </span>
+              </div>
+            )}
+
+            {/* Main Heading */}
+            <h1 
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight animate-fade-in-up text-foreground"
+              data-testid="text-hero-title"
+            >
+              <span className="block mb-1">Fashion</span>
+              <span className="block text-primary">Redefined</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-sm md:text-base lg:text-lg text-muted-foreground mb-6 md:mb-8 max-w-2xl leading-relaxed animate-fade-in-up animation-delay-300" data-testid="text-hero-subtitle">
+              Experience the future of style. Curated collections that blend
+              <span className="text-primary font-semibold"> innovation </span>
+              with elegance.
+            </p>
+
+            {/* Stats */}
+            <div className="flex flex-wrap gap-4 md:gap-6 mb-6 md:mb-8 animate-fade-in-up animation-delay-500">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-black/10">
+                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-black" />
+              </div>
+              <div>
+                <div className="text-xl md:text-2xl font-bold text-foreground">50%</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Off Sale</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-secondary flex items-center justify-center shadow-lg shadow-black/10">
+                <Zap className="w-5 h-5 md:w-6 md:h-6 text-black" />
+              </div>
+              <div>
+                <div className="text-xl md:text-2xl font-bold text-foreground">1000+</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Products</div>
+              </div>
+            </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-3 md:gap-4 animate-fade-in-up animation-delay-700">
+              <Link href="/category/new">
+                <Button 
+                  size="lg" 
+                  className="bg-primary hover:bg-primary/90 text-black border-0 shadow-xl shadow-black/10 hover:shadow-2xl hover:shadow-black/20 hover:scale-105 transition-all duration-300 text-sm md:text-base px-6 py-5 md:px-8 md:py-6"
+                  data-testid="button-shop-now"
+                >
+                  <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                  Shop Now
+                </Button>
+              </Link>
+              <Link href="/sales">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="backdrop-blur-md bg-card border-2 border-border text-foreground hover:bg-muted hover:border-border/80 hover:scale-105 transition-all duration-300 text-sm md:text-base px-6 py-5 md:px-8 md:py-6"
+                  data-testid="button-view-sale"
+                >
+                  Explore Collections
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Hero Image (optional, from admin banner) */}
+          {heroBanner?.imageUrl && (
+            <div className="relative hidden md:block">
+              <div className="relative aspect-[4/3] max-h-[420px] w-full rounded-3xl overflow-hidden">
+                <img
+                  src={heroBanner.imageUrl}
+                  alt={heroBanner.text}
+                  className="h-full w-full object-cover object-top"
+                />
+              </div>
             </div>
           )}
-
-          {/* Main Heading */}
-          <h1 
-            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight animate-fade-in-up"
-            data-testid="text-hero-title"
-          >
-            <span className="block bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-gradient mb-2">
-              Fashion
-            </span>
-            <span className="block bg-gradient-to-r from-pink-200 via-purple-200 to-yellow-200 bg-clip-text text-transparent animate-gradient animation-delay-500">
-              Redefined
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-sm md:text-base lg:text-lg text-gray-300 mb-6 md:mb-8 max-w-2xl leading-relaxed animate-fade-in-up animation-delay-300" data-testid="text-hero-subtitle">
-            Experience the future of style. Curated collections that blend
-            <span className="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text font-semibold"> innovation </span>
-            with elegance.
-          </p>
-
-          {/* Stats */}
-          <div className="flex flex-wrap gap-4 md:gap-6 mb-6 md:mb-8 animate-fade-in-up animation-delay-500">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-white" />
-              </div>
-              <div>
-                <div className="text-xl md:text-2xl font-bold text-white">50%</div>
-                <div className="text-xs md:text-sm text-gray-400">Off Sale</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                <Zap className="w-5 h-5 md:w-6 md:h-6 text-white" />
-              </div>
-              <div>
-                <div className="text-xl md:text-2xl font-bold text-white">1000+</div>
-                <div className="text-xs md:text-sm text-gray-400">Products</div>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-3 md:gap-4 animate-fade-in-up animation-delay-700">
-            <Link href="/category/new">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-xl shadow-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300 text-sm md:text-base px-6 py-5 md:px-8 md:py-6"
-                data-testid="button-shop-now"
-              >
-                <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                Shop Now
-              </Button>
-            </Link>
-            <Link href="/sales">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="backdrop-blur-md bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/40 hover:scale-105 transition-all duration-300 text-sm md:text-base px-6 py-5 md:px-8 md:py-6"
-                data-testid="button-view-sale"
-              >
-                Explore Collections
-              </Button>
-            </Link>
-          </div>
         </div>
       </div>
 

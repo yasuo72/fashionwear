@@ -199,7 +199,7 @@ export default function ProductDetailPage() {
       <Navbar />
       
       <main className="flex-1">
-        <div className="bg-muted py-4">
+        <div className="bg-muted py-3">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-sm text-muted-foreground">
               Home / {product.categoryId?.name || 'Products'} / <span className="text-foreground font-medium">{product.name}</span>
@@ -207,10 +207,10 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-10 mb-8">
             <div>
-              <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
+              <div className="aspect-[4/5] max-h-[460px] bg-muted rounded-lg overflow-hidden mb-4">
                 <img
                   src={product.images[selectedImage]}
                   alt="Product"

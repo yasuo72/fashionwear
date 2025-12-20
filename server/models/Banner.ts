@@ -3,7 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IBanner extends Document {
   text: string;
   type: 'badge' | 'announcement' | 'promo';
-  location: 'hero' | 'navbar' | 'footer' | 'category';
+  location: 'hero' | 'navbar' | 'footer' | 'category' | 'brands';
+  imageUrl?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -23,8 +24,12 @@ const BannerSchema: Schema = new Schema(
     },
     location: {
       type: String,
-      enum: ['hero', 'navbar', 'footer', 'category'],
+      enum: ['hero', 'navbar', 'footer', 'category', 'brands'],
       default: 'hero',
+    },
+    imageUrl: {
+      type: String,
+      default: '',
     },
     isActive: {
       type: Boolean,

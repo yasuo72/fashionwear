@@ -86,7 +86,7 @@ export default function SalePage() {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-red-500 via-pink-500 to-orange-500 text-white py-8 md:py-12">
+        <div className="bg-primary text-black py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Flame className="h-6 w-6 md:h-8 md:w-8" />
@@ -105,9 +105,9 @@ export default function SalePage() {
 
         {/* Flash Sale Section */}
         {flashSaleProducts.length > 0 && (
-          <section className="bg-gradient-to-r from-red-50 to-orange-50 py-8 md:py-12">
+          <section className="bg-muted py-8 md:py-12">
             <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-              <Card className="mb-6 md:mb-8 border-red-200 bg-gradient-to-r from-red-500 to-pink-500 text-white overflow-hidden">
+              <Card className="mb-6 md:mb-8 border border-border bg-card text-foreground overflow-hidden">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 md:gap-3">
@@ -142,7 +142,7 @@ export default function SalePage() {
                     {flashSaleProducts.map((product) => (
                       <div key={product._id} className="bg-white rounded-lg p-3 relative overflow-hidden">
                         <div className="absolute top-2 left-2 z-10">
-                          <Badge className="bg-red-500 text-white">
+                          <Badge className="bg-primary text-black">
                             {product.discount}% OFF
                           </Badge>
                         </div>
@@ -170,30 +170,30 @@ export default function SalePage() {
         <section className="py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
-              <Card className="bg-gradient-to-br from-blue-500 to-purple-600 text-white hover-elevate cursor-pointer overflow-hidden">
+              <Card className="bg-card text-foreground hover-elevate cursor-pointer overflow-hidden border border-border">
                 <CardContent className="p-4 md:p-6 text-center">
                   <ShoppingBag className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
                   <h3 className="text-lg md:text-xl font-bold mb-2">Fashion Sale</h3>
-                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 60% off on clothing</p>
-                  <Badge className="bg-white text-blue-600">2000+ Items</Badge>
+                  <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4">Up to 60% off on clothing</p>
+                  <Badge variant="secondary">2000+ Items</Badge>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-500 to-teal-600 text-white hover-elevate cursor-pointer overflow-hidden">
+              <Card className="bg-card text-foreground hover-elevate cursor-pointer overflow-hidden border border-border">
                 <CardContent className="p-4 md:p-6 text-center">
                   <Percent className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
                   <h3 className="text-lg md:text-xl font-bold mb-2">Clearance Sale</h3>
-                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 70% off selected items</p>
-                  <Badge className="bg-white text-green-600">Limited Stock</Badge>
+                  <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4">Up to 70% off selected items</p>
+                  <Badge variant="secondary">Limited Stock</Badge>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white hover-elevate cursor-pointer overflow-hidden">
+              <Card className="bg-card text-foreground hover-elevate cursor-pointer overflow-hidden border border-border">
                 <CardContent className="p-4 md:p-6 text-center">
                   <TrendingDown className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4" />
                   <h3 className="text-lg md:text-xl font-bold mb-2">End of Season</h3>
-                  <p className="text-sm md:text-base text-white/90 mb-3 md:mb-4">Up to 50% off winter collection</p>
-                  <Badge className="bg-white text-orange-600">Trending</Badge>
+                  <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4">Up to 50% off winter collection</p>
+                  <Badge variant="secondary">Trending</Badge>
                 </CardContent>
               </Card>
             </div>
@@ -279,7 +279,7 @@ export default function SalePage() {
         </section>
 
         {/* Sale Stats */}
-        <section className="py-8 md:py-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <section className="py-8 md:py-12 bg-primary text-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
               <div>

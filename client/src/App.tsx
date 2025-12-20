@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { Chatbot } from "@/components/Chatbot";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import CategoryPage from "@/pages/CategoryPage";
@@ -68,6 +69,7 @@ export default function App() {
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
+          <ScrollToTop />
           <Router />
           <Chatbot />
         </TooltipProvider>

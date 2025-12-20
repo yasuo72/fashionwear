@@ -31,7 +31,8 @@ export function BannerManagement({
   const [bannerForm, setBannerForm] = useState({
     text: "",
     type: "badge" as 'badge' | 'announcement' | 'promo',
-    location: "hero" as 'hero' | 'navbar' | 'footer' | 'category',
+    location: "hero" as 'hero' | 'navbar' | 'footer' | 'category' | 'brands',
+    imageUrl: "",
     isActive: true,
   });
 
@@ -40,6 +41,7 @@ export function BannerManagement({
       text: "",
       type: "badge",
       location: "hero",
+      imageUrl: "",
       isActive: true,
     });
     setEditingBanner(null);
@@ -66,6 +68,7 @@ export function BannerManagement({
       text: banner.text,
       type: banner.type,
       location: banner.location,
+      imageUrl: banner.imageUrl || "",
       isActive: banner.isActive,
     });
     setShowDialog(true);
@@ -149,8 +152,19 @@ export function BannerManagement({
                     <SelectItem value="navbar">Navbar</SelectItem>
                     <SelectItem value="footer">Footer</SelectItem>
                     <SelectItem value="category">Category Page</SelectItem>
+                    <SelectItem value="brands">Brands Row (below Hero)</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="imageUrl">Image URL (optional)</Label>
+                <Input
+                  id="imageUrl"
+                  value={bannerForm.imageUrl}
+                  onChange={(e) => setBannerForm({ ...bannerForm, imageUrl: e.target.value })}
+                  placeholder="https://example.com/hero-model-or-brand-logo.jpg"
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -176,7 +190,7 @@ export function BannerManagement({
             <div className="flex items-start justify-between">
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-2">
-                  <Megaphone className="h-5 w-5 text-purple-600" />
+                  <Megaphone className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold text-lg">{banner.text}</h3>
                 </div>
                 
@@ -188,6 +202,17 @@ export function BannerManagement({
                   </Badge>
                 </div>
                 
+                {banner.imageUrl && (
+                  <div className="mt-2 flex items-center gap-3">
+                    <img 
+                      src={banner.imageUrl} 
+                      alt={banner.text} 
+                      className="h-10 w-20 object-contain rounded border border-border bg-muted"
+                    />
+                    <span className="text-xs text-muted-foreground break-all">{banner.imageUrl}</span>
+                  </div>
+                )}
+
                 <p className="text-sm text-muted-foreground">
                   Created: {new Date(banner.createdAt).toLocaleDateString()}
                 </p>

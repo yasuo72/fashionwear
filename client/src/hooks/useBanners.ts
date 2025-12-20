@@ -4,7 +4,8 @@ export interface Banner {
   _id: string;
   text: string;
   type: 'badge' | 'announcement' | 'promo';
-  location: 'hero' | 'navbar' | 'footer' | 'category';
+  location: 'hero' | 'navbar' | 'footer' | 'category' | 'brands';
+  imageUrl?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

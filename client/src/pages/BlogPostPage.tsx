@@ -206,7 +206,7 @@ export default function BlogPostPage() {
       {/* Reading Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-muted z-50">
         <div 
-          className="h-full bg-gradient-to-r from-primary via-purple-500 to-pink-500 transition-all duration-300"
+          className="h-full bg-primary transition-all duration-300"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -451,7 +451,7 @@ export default function BlogPostPage() {
               </div>
 
               {/* Share Again */}
-              <div className="mt-8 p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 rounded-lg border border-primary/10">
+              <div className="mt-8 p-4 sm:p-6 bg-primary/5 rounded-lg border border-primary/10">
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
                   <Share2 className="h-5 w-5 text-primary" />
                   Love this article? Share it!

@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
+import { BrandRow } from "@/components/BrandRow";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductCard } from "@/components/ProductCard";
 import { Footer } from "@/components/Footer";
@@ -29,15 +30,16 @@ export default function HomePage() {
       
       <main className="flex-1">
         <HeroSection />
+        <BrandRow />
 
-        {/* Categories Section - Enhanced */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full px-4 py-2 mb-4">
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Explore Collections</span>
+        {/* Categories Section - Classic */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-14">
+          <div className="text-center mb-8 md:mb-10">
+            <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-4">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Explore Collections</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Shop by Category
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -47,7 +49,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {categoriesLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-48 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 animate-pulse rounded-2xl" />
+                <div key={i} className="h-48 bg-muted animate-pulse rounded-2xl" />
               ))
             ) : (
               categories.map((category, index) => (
@@ -70,24 +72,24 @@ export default function HomePage() {
 
         {/* Trending Products */}
         {trending.length > 0 && (
-          <section className="relative py-16 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950/30 dark:via-red-950/30 dark:to-pink-950/30" />
+          <section className="relative py-12 overflow-hidden">
+            <div className="absolute inset-0 bg-muted" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-orange-300 dark:bg-orange-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob" />
             
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col md:flex-row items-center justify-between mb-12">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-10">
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center animate-pulse">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center animate-pulse">
                       <Flame className="w-5 h-5 text-white" />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                       Trending Now
                     </h2>
                   </div>
                   <p className="text-muted-foreground text-lg">What everyone's loving right now</p>
                 </div>
-                <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white text-lg px-6 py-2 shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-orange-500/60 hover:scale-105 transition-all">
+                <Badge className="bg-primary text-black text-lg px-6 py-2 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 hover:scale-105 transition-all">
                   <TrendingUp className="w-4 h-4 mr-2" />
                   Hot
                 </Badge>
@@ -95,7 +97,7 @@ export default function HomePage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {trendingLoading ? (
                   Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="h-80 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 animate-pulse rounded-2xl" />
+                    <div key={i} className="h-80 bg-muted animate-pulse rounded-2xl" />
                   ))
                 ) : (
                   trending.slice(0, 8).map((product, index) => (
@@ -126,23 +128,23 @@ export default function HomePage() {
         {/* Best Selling Products */}
         {bestSelling.length > 0 && (
           <section className="relative py-16 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-950/30 dark:via-amber-950/30 dark:to-orange-950/30" />
+            <div className="absolute inset-0 bg-muted" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
             
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col md:flex-row items-center justify-between mb-12">
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-orange-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                       <Crown className="w-5 h-5 text-white" />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                       Best Sellers
                     </h2>
                   </div>
                   <p className="text-muted-foreground text-lg">Top picks from our customers</p>
                 </div>
-                <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-lg px-6 py-2 shadow-lg shadow-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/60 hover:scale-105 transition-all">
+                <Badge className="bg-primary text-black text-lg px-6 py-2 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 hover:scale-105 transition-all">
                   <Star className="w-4 h-4 mr-2 fill-current" />
                   Popular
                 </Badge>
@@ -150,7 +152,7 @@ export default function HomePage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {bestSellingLoading ? (
                   Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="h-80 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 animate-pulse rounded-2xl" />
+                    <div key={i} className="h-80 bg-muted animate-pulse rounded-2xl" />
                   ))
                 ) : (
                   bestSelling.slice(0, 8).map((product, index) => (
@@ -178,27 +180,27 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Featured Products - Futuristic Design */}
-        <section className="relative py-20 overflow-hidden">
+        {/* Featured Products */}
+        <section className="relative py-14 md:py-16 overflow-hidden">
           {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-yellow-950/30" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+          <div className="absolute inset-0 bg-muted" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
           
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-center justify-between mb-12">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                     <Star className="w-5 h-5 text-white fill-white" />
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                     Featured Products
                   </h2>
                 </div>
                 <p className="text-muted-foreground text-lg">Handpicked treasures just for you</p>
               </div>
-              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg px-6 py-2 shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 transition-all">
+              <Badge className="bg-primary text-black text-lg px-6 py-2 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 hover:scale-105 transition-all">
                 <Sparkles className="w-4 h-4 mr-2" />
                 New
               </Badge>
@@ -206,7 +208,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {featuredLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-80 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 animate-pulse rounded-2xl" />
+                  <div key={i} className="h-80 bg-muted animate-pulse rounded-2xl" />
                 ))
               ) : (
                 featured.map((product, index) => (
@@ -274,16 +276,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Features Section - Modern Cards */}
+        {/* Features Section */}
         <section className="relative py-16 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-950 dark:to-gray-900" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="group p-8 text-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border-0 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+              <Card className="group p-8 text-center bg-card border border-border shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
                   <Truck className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Free Shipping</h3>
+                <h3 className="font-bold text-lg mb-2 text-foreground">Free Shipping</h3>
                 <p className="text-sm text-muted-foreground">On all orders over ₹499</p>
               </Card>
               <Card className="group p-8 text-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 border-0 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
