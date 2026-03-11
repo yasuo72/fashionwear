@@ -160,12 +160,12 @@ export function Navbar() {
                   <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:scale-110 transition-all duration-300 flex-shrink-0 hover:bg-amber-500/10" data-testid="button-user">
                     <Avatar className="h-9 w-9 ring-2 ring-amber-500/30 hover:ring-amber-500/60 hover:ring-4 transition-all duration-300">
                       <AvatarImage 
-                        src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`} 
-                        alt={`${user.firstName} ${user.lastName}`}
+                        src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.firstName || 'user'}`} 
+                        alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
                         className="object-cover"
                       />
                       <AvatarFallback className="text-xs bg-gradient-to-br from-amber-500 to-orange-500 text-white font-bold">
-                        {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                        {user?.firstName?.charAt(0) || 'U'}{user?.lastName?.charAt(0) || ''}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -175,16 +175,16 @@ export function Navbar() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12 ring-2 ring-amber-500/30">
                         <AvatarImage 
-                          src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.firstName}`}
+                          src={(user as any).profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.firstName || 'user'}`}
                           className="object-cover"
                         />
                         <AvatarFallback className="bg-gradient-to-br from-amber-500 to-orange-500 text-white font-bold">
-                          {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                          {user?.firstName?.charAt(0) || 'U'}{user?.lastName?.charAt(0) || ''}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-bold">
-                          {user.firstName} {user.lastName}
+                          {user?.firstName || ''} {user?.lastName || ''}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {user.email}
