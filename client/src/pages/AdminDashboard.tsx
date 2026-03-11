@@ -748,7 +748,7 @@ export default function AdminDashboard() {
                             <div>
                               <div className="font-medium">Order #{order.orderNumber}</div>
                               <div className="text-sm text-muted-foreground">
-                                {order.userId.firstName} {order.userId.lastName}
+                                {order.userId?.firstName || 'Guest'} {order.userId?.lastName || ''}
                               </div>
                             </div>
                             <div className="text-right">

@@ -15,7 +15,7 @@ import {
   CreditCard,
   MapPin,
   HelpCircle,
-  Sparkles
+  Headphones
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrders } from "@/hooks/useOrders";
@@ -25,12 +25,12 @@ import { useLocation } from "wouter";
 interface Message {
   id: string;
   text: string;
-  sender: "user" | "bot";
+  sender: "user" | "support";
   timestamp: Date;
   suggestions?: string[];
 }
 
-export function Chatbot() {
+export function SupportChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -59,9 +59,9 @@ export function Chatbot() {
       const welcomeMsg: Message = {
         id: Date.now().toString(),
         text: user 
-          ? `Hi ${user.firstName}! 👋 I'm your FashionFusion assistant. How can I help you today?`
-          : "Hi there! 👋 I'm your FashionFusion assistant. How can I help you today?",
-        sender: "bot",
+          ? `Hi ${user.firstName}! 👋 Welcome to FashionFusion. How can I help you today?`
+          : "Hi there! 👋 Welcome to FashionFusion. How can I help you today?",
+        sender: "support",
         timestamp: new Date(),
         suggestions: [
           "Track my order",
@@ -245,7 +245,7 @@ export function Chatbot() {
     return {
       id: Date.now().toString(),
       text: responseText,
-      sender: "bot",
+      sender: "support",
       timestamp: new Date(),
       suggestions
     };
@@ -341,12 +341,12 @@ export function Chatbot() {
         >
           <Button
             onClick={() => setIsOpen(true)}
-            className="h-14 w-14 rounded-full shadow-xl hover:scale-110 transition-all duration-300 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 hover:shadow-purple-500/50 border-2 border-white dark:border-gray-800"
+            className="h-14 w-14 rounded-full shadow-xl hover:scale-110 transition-all duration-300 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 hover:shadow-orange-500/50 border-2 border-white dark:border-gray-800"
             size="icon"
           >
             <MessageCircle className="h-6 w-6 text-white" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-              <Sparkles className="h-3 w-3 text-white" />
+            <span className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+              <Headphones className="h-3 w-3 text-white" />
             </span>
           </Button>
         </div>
@@ -360,14 +360,14 @@ export function Chatbot() {
         >
           <Card className="w-[90vw] max-w-[420px] h-[70vh] max-h-[680px] shadow-2xl flex flex-col border-2 border-primary/20 rounded-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground rounded-t-lg">
+          <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white rounded-t-lg">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                <Bot className="h-6 w-6" />
+              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                <Headphones className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold">FashionFusion Assistant</h3>
-                <p className="text-xs opacity-90">Always here to help! 💬</p>
+                <h3 className="font-semibold">FashionFusion Support</h3>
+                <p className="text-xs opacity-90">Online • Ready to help</p>
               </div>
             </div>
             <Button
@@ -390,9 +390,9 @@ export function Chatbot() {
                       message.sender === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {message.sender === "bot" && (
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Bot className="h-4 w-4 text-primary" />
+                    {message.sender === "support" && (
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                        <Headphones className="h-4 w-4 text-white" />
                       </div>
                     )}
                     <div
@@ -418,7 +418,7 @@ export function Chatbot() {
                   </div>
 
                   {/* Suggestions */}
-                  {message.sender === "bot" && message.suggestions && (
+                  {message.sender === "support" && message.suggestions && (
                     <div className="flex flex-wrap gap-2 mt-2 ml-10">
                       {message.suggestions.map((suggestion, idx) => (
                         <Badge
@@ -438,8 +438,8 @@ export function Chatbot() {
               {/* Typing indicator */}
               {isTyping && (
                 <div className="flex gap-2 justify-start">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-primary" />
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                    <Headphones className="h-4 w-4 text-white" />
                   </div>
                   <div className="bg-muted rounded-lg p-3">
                     <div className="flex gap-1">
@@ -472,7 +472,7 @@ export function Chatbot() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-2">
-              Powered by FashionFusion AI ✨
+              FashionFusion Support Team
             </p>
           </div>
           </Card>

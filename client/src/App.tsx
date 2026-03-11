@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme-provider";
-import { Chatbot } from "@/components/Chatbot";
+import { SupportChat } from "@/components/Chatbot";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
@@ -71,7 +71,7 @@ export default function App() {
           <Toaster />
           <ScrollToTop />
           <Router />
-          <Chatbot />
+          <SupportChat />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

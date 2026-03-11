@@ -381,11 +381,51 @@
   @keyframes pulse-glow {
     0%, 100% {
       opacity: 1;
-      box-shadow: 0 0 20px rgba(230, 199, 68, 0.4);
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
     }
     50% {
       opacity: 0.8;
-      box-shadow: 0 0 40px rgba(230, 199, 68, 0.6);
+      box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes slide-up {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.3), 0 0 40px rgba(251, 191, 36, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.5), 0 0 60px rgba(251, 191, 36, 0.3);
     }
   }
 
@@ -410,6 +450,28 @@
     animation: pulse-glow 2s ease-in-out infinite;
   }
 
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out forwards;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
+  }
+
   .animation-delay-300 {
     animation-delay: 0.3s;
   }
@@ -428,6 +490,52 @@
 
   .animation-delay-4000 {
     animation-delay: 4s;
+  }
+
+  .animation-delay-5000 {
+    animation-delay: 5s;
+  }
+
+  /* Floating animations for hero section cards */
+  .animate-float-card {
+    animation: float-card 3s ease-in-out infinite;
+  }
+
+  .animate-float-card-delayed {
+    animation: float-card 3s ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
+
+  @keyframes float-card {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Modern gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/80 dark:bg-black/50 backdrop-blur-xl border border-white/20 dark:border-gray-800/30;
+  }
+
+  /* Modern card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/20 hover:scale-[1.02];
+  }
+
+  /* Gradient border */
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(var(--background), var(--background)) padding-box,
+                linear-gradient(135deg, #f59e0b, #ea580c) border-box;
+    border: 2px solid transparent;
   }
 
   /* Hide scrollbar but keep functionality */
