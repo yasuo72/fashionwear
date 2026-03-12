@@ -199,25 +199,25 @@ export default function ProductDetailPage() {
       <Navbar />
       
       <main className="flex-1">
-        <div className="bg-muted py-3">
+        <div className="bg-muted/50 py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               Home / {product.categoryId?.name || 'Products'} / <span className="text-foreground font-medium">{product.name}</span>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-10 mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+          <div className="grid md:grid-cols-2 gap-4 lg:gap-6 mb-6">
             <div>
-              <div className="aspect-[4/5] max-h-[460px] bg-muted rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square max-h-[350px] bg-muted rounded-lg overflow-hidden mb-3">
                 <img
                   src={product.images[selectedImage]}
                   alt="Product"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-2">
                 {product.images.map((image: string, index: number) => (
                   <button
                     key={index}
@@ -234,60 +234,64 @@ export default function ProductDetailPage() {
             </div>
 
             <div>
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h1 className="text-3xl font-bold mb-2" data-testid="text-product-title">
+                  <h1 className="text-xl md:text-2xl font-bold mb-1" data-testid="text-product-title">
                     {product.name}
                   </h1>
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2">
                     <div className="flex items-center">
-                      <Star className="h-5 w-5 fill-primary text-primary" />
-                      <span className="font-semibold ml-1">{product.rating}</span>
+                      <Star className="h-4 w-4 fill-primary text-primary" />
+                      <span className="font-semibold ml-1 text-sm">{product.rating}</span>
                     </div>
-                    <span className="text-muted-foreground">({product.reviewCount} reviews)</span>
+                    <span className="text-muted-foreground text-sm">({product.reviewCount} reviews)</span>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <Button 
                     variant="outline" 
                     size="icon" 
+                    className="h-8 w-8"
                     onClick={handleShare}
                     data-testid="button-share"
                   >
-                    <Share2 className="h-5 w-5" />
+                    <Share2 className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="icon" 
+                    size="icon"
+                    className="h-8 w-8"
                     onClick={handleWishlistToggle}
                     disabled={addToWishlist.isPending || removeFromWishlist.isPending}
                     data-testid="button-add-wishlist"
                   >
                     <Heart 
-                      className={`h-5 w-5 ${isInWishlist ? 'fill-primary text-primary' : ''}`} 
+                      className={`h-4 w-4 ${isInWishlist ? 'fill-primary text-primary' : ''}`} 
                     />
                   </Button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold" data-testid="text-product-price">₹{product.price}</span>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl font-bold" data-testid="text-product-price">₹{product.price}</span>
                 {product.originalPrice && (
-                  <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice}</span>
+                  <span className="text-base text-muted-foreground line-through">₹{product.originalPrice}</span>
                 )}
                 {product.discount && (
-                  <Badge className="bg-chart-3 text-white">{product.discount}% OFF</Badge>
+                  <Badge className="bg-chart-3 text-white text-xs">{product.discount}% OFF</Badge>
                 )}
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold mb-3">Select Size</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="font-semibold mb-2 text-sm">Select Size</h3>
+                  <div className="flex flex-wrap gap-1.5">
                     {sizes.map((size) => (
                       <Button
                         key={size}
                         variant={selectedSize === size ? "default" : "outline"}
+                        size="sm"
+                        className="h-8 text-xs px-3"
                         onClick={() => setSelectedSize(size)}
                         data-testid={`button-size-${size.toLowerCase()}`}
                       >
@@ -298,12 +302,14 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold mb-3">Select Color</h3>
-                  <div className="flex gap-3 flex-wrap">
+                  <h3 className="font-semibold mb-2 text-sm">Select Color</h3>
+                  <div className="flex gap-1.5 flex-wrap">
                     {colors.map((color) => (
                       <Button
                         key={color}
                         variant={selectedColor === color ? "default" : "outline"}
+                        size="sm"
+                        className="h-8 text-xs px-3"
                         onClick={() => setSelectedColor(color)}
                         data-testid={`button-color-${color.toLowerCase()}`}
                       >
@@ -314,18 +320,22 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold mb-3">Quantity</h3>
-                  <div className="flex items-center gap-3">
+                  <h3 className="font-semibold mb-2 text-sm">Quantity</h3>
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       data-testid="button-decrease-quantity"
                     >
                       -
                     </Button>
-                    <span className="w-12 text-center font-semibold" data-testid="text-quantity">{quantity}</span>
+                    <span className="w-10 text-center font-semibold text-sm" data-testid="text-quantity">{quantity}</span>
                     <Button
                       variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0"
                       onClick={() => setQuantity(quantity + 1)}
                       data-testid="button-increase-quantity"
                     >
@@ -334,65 +344,65 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <Button 
-                    className="flex-1" 
-                    size="lg" 
+                    className="flex-1 h-9" 
+                    size="sm" 
                     onClick={handleAddToCart}
                     disabled={addToCart.isPending}
                     data-testid="button-add-to-cart"
                   >
                     {addToCart.isPending ? "Adding..." : "Add to Cart"}
                   </Button>
-                  <Button variant="outline" className="flex-1" size="lg" data-testid="button-buy-now">
+                  <Button variant="outline" className="flex-1 h-9" size="sm" data-testid="button-buy-now">
                     Buy Now
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                <div className="grid grid-cols-3 gap-3 pt-3 border-t">
                   <div className="text-center">
-                    <Truck className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">Free Shipping</p>
+                    <Truck className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-[10px] text-muted-foreground">Free Shipping</p>
                   </div>
                   <div className="text-center">
-                    <RefreshCw className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">Easy Returns</p>
+                    <RefreshCw className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-[10px] text-muted-foreground">Easy Returns</p>
                   </div>
                   <div className="text-center">
-                    <Shield className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">2 Year Warranty</p>
+                    <Shield className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-[10px] text-muted-foreground">2 Year Warranty</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="description" className="mb-12">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="description" data-testid="tab-description">Description</TabsTrigger>
-              <TabsTrigger value="reviews" data-testid="tab-reviews">Reviews ({product.reviewCount || 0})</TabsTrigger>
-              <TabsTrigger value="size-guide" data-testid="tab-size-guide">Size Guide</TabsTrigger>
+          <Tabs defaultValue="description" className="mb-6">
+            <TabsList className="w-full justify-start h-9">
+              <TabsTrigger value="description" className="text-xs" data-testid="tab-description">Description</TabsTrigger>
+              <TabsTrigger value="reviews" className="text-xs" data-testid="tab-reviews">Reviews ({product.reviewCount || 0})</TabsTrigger>
+              <TabsTrigger value="size-guide" className="text-xs" data-testid="tab-size-guide">Size Guide</TabsTrigger>
             </TabsList>
-            <TabsContent value="description" className="mt-6">
-              <Card className="p-6">
-                <p className="text-muted-foreground leading-relaxed">
+            <TabsContent value="description" className="mt-4">
+              <Card className="p-4">
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   {product.description}
                 </p>
                 {product.brand && (
-                  <div className="mt-4">
-                    <p className="font-semibold">Brand: <span className="font-normal">{product.brand}</span></p>
+                  <div className="mt-3">
+                    <p className="font-semibold text-sm">Brand: <span className="font-normal">{product.brand}</span></p>
                   </div>
                 )}
                 {product.tags && product.tags.length > 0 && (
-                  <div className="mt-4 flex gap-2 flex-wrap">
+                  <div className="mt-3 flex gap-1.5 flex-wrap">
                     {product.tags.map((tag, i) => (
-                      <Badge key={i} variant="secondary">{tag}</Badge>
+                      <Badge key={i} variant="secondary" className="text-xs">{tag}</Badge>
                     ))}
                   </div>
                 )}
               </Card>
             </TabsContent>
-            <TabsContent value="reviews" className="mt-6">
+            <TabsContent value="reviews" className="mt-4">
               <ReviewSection
                 productId={product._id}
                 reviews={reviews}
@@ -401,16 +411,16 @@ export default function ProductDetailPage() {
                 onReviewSubmit={() => refetchReviews()}
               />
             </TabsContent>
-            <TabsContent value="size-guide" className="mt-6">
-              <Card className="p-6">
-                <p className="text-muted-foreground">Size guide information will be displayed here.</p>
+            <TabsContent value="size-guide" className="mt-4">
+              <Card className="p-4">
+                <p className="text-muted-foreground text-sm">Size guide information will be displayed here.</p>
               </Card>
             </TabsContent>
           </Tabs>
 
           <div>
-            <h2 className="text-2xl font-semibold mb-6">You May Also Like</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <h2 className="text-lg font-semibold mb-4">You May Also Like</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {relatedProducts.map((prod) => (
                 <ProductCard 
                   key={prod._id} 

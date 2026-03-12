@@ -152,22 +152,26 @@ export default function HomePage() {
         </div>
 
         {/* ── Stats Bar ──────────────────────────────── */}
-        <section ref={statsRef} className="bg-foreground text-background py-10">
+        <section ref={statsRef} className="bg-foreground text-background py-6 md:py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { value: 50000, suffix: "+", label: "Happy Customers", color: "#f59e0b" },
                 { value: 10000, suffix: "+", label: "Products Listed", color: "#10b981" },
                 { value: 500, suffix: "+", label: "Top Brands", color: "#6366f1" },
                 { value: 99, suffix: "%", label: "Satisfaction Rate", color: "#f43f5e" },
               ].map((s) => (
-                <div key={s.label} className="text-center p-4">
-                  <div className="text-3xl md:text-4xl font-black mb-1" style={{ color: s.color }}>
+                <div 
+                  key={s.label} 
+                  className="text-center p-3 rounded-xl bg-background/5 backdrop-blur-sm border border-background/10 hover:bg-background/10 hover:border-background/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                  style={{ perspective: '1000px' }}
+                >
+                  <div className="text-2xl md:text-3xl font-black mb-0.5" style={{ color: s.color }}>
                     {statsInView
                       ? <AnimatedNumber value={s.value} suffix={s.suffix} />
                       : `0${s.suffix}`}
                   </div>
-                  <div className="text-sm text-background/60 font-medium">{s.label}</div>
+                  <div className="text-xs text-background/60 font-medium">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -175,7 +179,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Categories ─────────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
           <SectionHeader
             eyebrow="Collections"
             eyebrowIcon={ShoppingBag}
@@ -207,7 +211,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Promo Banner ───────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
           <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 p-8 md:p-12">
             {/* decorative circles */}
             <div className="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full" />
@@ -239,7 +243,7 @@ export default function HomePage() {
 
         {/* ── Trending Products ──────────────────────── */}
         {(trendingLoading || trending.length > 0) && (
-          <section className="bg-muted/40 py-16 md:py-20">
+          <section className="bg-muted/40 py-10 md:py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <SectionHeader
                 eyebrow="Hot Right Now"
@@ -273,7 +277,7 @@ export default function HomePage() {
 
         {/* ── Best Sellers ───────────────────────────── */}
         {(bestSellingLoading || bestSelling.length > 0) && (
-          <section className="py-16 md:py-20">
+          <section className="py-10 md:py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <SectionHeader
                 eyebrow="Customer Favourites"
@@ -306,7 +310,7 @@ export default function HomePage() {
         )}
 
         {/* ── Featured Products ──────────────────────── */}
-        <section className="bg-muted/40 py-16 md:py-20">
+        <section className="bg-muted/40 py-10 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
               eyebrow="Editor's Pick"
@@ -338,7 +342,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Latest Arrivals ────────────────────────── */}
-        <section className="py-16 md:py-20">
+        <section className="py-10 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
               eyebrow="Just Dropped"
@@ -368,7 +372,7 @@ export default function HomePage() {
             </div>
 
             {/* Load More */}
-            <div className="mt-12 text-center">
+            <div className="mt-8 text-center">
               <a
                 href="/products"
                 className="inline-flex items-center gap-2 bg-foreground text-background px-10 py-4 rounded-2xl font-bold hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-xl"
@@ -380,9 +384,9 @@ export default function HomePage() {
         </section>
 
         {/* ── Trust Features ─────────────────────────── */}
-        <section className="border-t border-border/60 bg-muted/20 py-14">
+        <section className="border-t border-border/60 bg-muted/20 py-8 md:py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-3 gap-4">
               {[
                 {
                   icon: Truck,
@@ -411,17 +415,18 @@ export default function HomePage() {
               ].map(({ icon: Icon, color, title, desc }, i) => (
                 <div
                   key={title}
-                  className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-md transition-all duration-200"
+                  className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border/50 hover:border-border hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
+                  style={{ perspective: '1000px' }}
                 >
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 hover:rotate-12 transition-transform duration-300"
                     style={{ background: `${color}18` }}
                   >
-                    <Icon className="w-6 h-6" style={{ color }} />
+                    <Icon className="w-5 h-5" style={{ color }} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-foreground mb-1">{title}</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                    <h4 className="font-bold text-foreground mb-0.5 text-sm">{title}</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
                   </div>
                 </div>
               ))}
@@ -430,36 +435,38 @@ export default function HomePage() {
         </section>
 
         {/* ── Newsletter ─────────────────────────────── */}
-        <section className="py-16 md:py-20">
+        <section className="py-10 md:py-12">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full mb-4 tracking-widest uppercase">
-              <Sparkles className="w-3 h-3" /> Stay Updated
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-foreground mb-3">
-              Get Exclusive Deals
-            </h2>
-            <p className="text-muted-foreground mb-8 text-base max-w-lg mx-auto">
-              Subscribe for early access to sales, new arrivals, and members-only offers.
-            </p>
-            <form
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 px-5 py-3.5 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3.5 bg-foreground text-background font-bold rounded-xl hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-sm"
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-100 dark:border-indigo-900/50 hover:shadow-xl hover:scale-[1.01] transition-all duration-300" style={{ perspective: '1000px' }}>
+              <div className="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1 rounded-full mb-3 tracking-widest uppercase">
+                <Sparkles className="w-3 h-3" /> Stay Updated
+              </div>
+              <h2 className="text-xl md:text-2xl font-black text-foreground mb-2">
+                Get Exclusive Deals
+              </h2>
+              <p className="text-muted-foreground mb-5 text-sm max-w-lg mx-auto">
+                Subscribe for early access to sales, new arrivals, and members-only offers.
+              </p>
+              <form
+                className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
+                onSubmit={(e) => e.preventDefault()}
               >
-                Subscribe
-              </button>
-            </form>
-            <p className="text-xs text-muted-foreground mt-3">
-              No spam, ever. Unsubscribe anytime.
-            </p>
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-foreground text-background font-bold rounded-lg hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-sm"
+                >
+                  Subscribe
+                </button>
+              </form>
+              <p className="text-xs text-muted-foreground mt-2">
+                No spam, ever. Unsubscribe anytime.
+              </p>
+            </div>
           </div>
         </section>
 
