@@ -35,7 +35,7 @@ import {
   Eye,
   TrendingUp,
   TrendingDown,
-  DollarSign,
+  IndianRupee,
   Package2,
   UserCheck,
   Clock,
@@ -669,122 +669,167 @@ export default function AdminDashboard() {
           <main className="flex-1 overflow-auto p-6">
             {activeTab === "dashboard" && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">₹{(stats.totalRevenue || 0).toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground flex items-center">
-                        {(stats.revenueGrowth || 0) >= 0 ? (
-                          <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
-                        )}
-                        {Math.abs(stats.revenueGrowth || 0)}% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                      <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{(stats.totalOrders || 0).toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground flex items-center">
-                        {(stats.ordersGrowth || 0) >= 0 ? (
-                          <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
-                        )}
-                        {Math.abs(stats.ordersGrowth || 0)}% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                      <UserCheck className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{(stats.activeUsers || 0).toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground flex items-center">
-                        {(stats.usersGrowth || 0) >= 0 ? (
-                          <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
-                        )}
-                        {Math.abs(stats.usersGrowth || 0)}% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Products</CardTitle>
-                      <Package2 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{stats.totalProducts || 0}</div>
-                      <p className="text-xs text-muted-foreground">{categories.length} categories</p>
-                    </CardContent>
-                  </Card>
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                  <div className="group" style={{ perspective: '1000px' }}>
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full mb-2">
+                      <LayoutDashboard className="w-3 h-3" />
+                      Overview
+                    </div>
+                    <h2 className="text-2xl font-black bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                      Dashboard
+                    </h2>
+                    <p className="text-muted-foreground text-sm">Welcome back! Here's your store overview.</p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Recent Orders</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {orders.slice(0, 5).map((order) => (
-                          <div key={order._id} className="flex items-center justify-between py-3 border-b last:border-0">
-                            <div>
-                              <div className="font-medium">Order #{order.orderNumber}</div>
-                              <div className="text-sm text-muted-foreground">
-                                {order.userId?.firstName || 'Guest'} {order.userId?.lastName || ''}
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">₹{order.total.toFixed(0)}</div>
-                              <div className="flex items-center gap-1 text-sm">
-                                {getOrderStatusIcon(order.status)}
-                                <span className="capitalize">{order.status}</span>
-                              </div>
-                            </div>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  {[
+                    { title: "Total Revenue", value: `₹${(stats.totalRevenue || 0).toLocaleString()}`, icon: IndianRupee, growth: stats.revenueGrowth, color: "#10b981", gradient: "from-emerald-500 to-green-600" },
+                    { title: "Total Orders", value: (stats.totalOrders || 0).toLocaleString(), icon: ShoppingCart, growth: stats.ordersGrowth, color: "#3b82f6", gradient: "from-blue-500 to-indigo-600" },
+                    { title: "Active Users", value: (stats.activeUsers || 0).toLocaleString(), icon: UserCheck, growth: stats.usersGrowth, color: "#8b5cf6", gradient: "from-violet-500 to-purple-600" },
+                    { title: "Products", value: stats.totalProducts || 0, icon: Package2, growth: null, color: "#f97316", gradient: "from-orange-500 to-amber-600" },
+                  ].map((stat, index) => (
+                    <div 
+                      key={index}
+                      className="group relative"
+                      style={{ perspective: '1000px' }}
+                    >
+                      <div 
+                        className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300"
+                        style={{ background: `linear-gradient(135deg, ${stat.color}40, ${stat.color}20)` }}
+                      />
+                      <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg group-hover:scale-[1.02] transform-gpu h-full">
+                        <div 
+                          className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-10`}
+                        />
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+                          <CardTitle className="text-xs font-medium text-muted-foreground">{stat.title}</CardTitle>
+                          <div 
+                            className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                            style={{ background: `${stat.color}20` }}
+                          >
+                            <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
                           </div>
-                        ))}
-                        {orders.length === 0 && (
-                          <p className="text-muted-foreground text-center py-4">No orders yet</p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </CardHeader>
+                        <CardContent className="relative">
+                          <div className="text-2xl font-black" style={{ color: stat.color }}>{stat.value}</div>
+                          {stat.growth !== null && (
+                            <p className="text-xs text-muted-foreground flex items-center mt-1">
+                              {stat.growth >= 0 ? (
+                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
+                              ) : (
+                                <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
+                              )}
+                              {Math.abs(stat.growth)}% from last month
+                            </p>
+                          )}
+                          {stat.growth === null && (
+                            <p className="text-xs text-muted-foreground mt-1">{categories.length} categories</p>
+                          )}
+                        </CardContent>
+                        
+                        {/* Shine effect */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:left-[150%] transition-all duration-700" />
+                        </div>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Top Selling Products</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {topProducts.slice(0, 5).map((product, i) => (
-                          <div key={i} className="flex items-center justify-between py-3 border-b last:border-0">
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-muted-foreground">{product.sales} sales</div>
+                {/* Recent Orders & Top Products */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Recent Orders */}
+                  <div 
+                    className="group relative"
+                    style={{ perspective: '1000px' }}
+                  >
+                    <div 
+                      className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300"
+                      style={{ background: 'linear-gradient(135deg, #3b82f640, #3b82f620)' }}
+                    />
+                    <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg h-full">
+                      <CardHeader className="pb-3 border-b border-border/30">
+                        <CardTitle className="flex items-center gap-2 text-base font-bold">
+                          <div className="p-2 rounded-lg bg-blue-500/10">
+                            <ShoppingCart className="h-4 w-4 text-blue-600" />
                           </div>
-                        ))}
-                        {topProducts.length === 0 && (
-                          <p className="text-muted-foreground text-center py-4">No sales data yet</p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                          Recent Orders
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-4">
+                        <div className="space-y-3">
+                          {orders.slice(0, 5).map((order) => (
+                            <div key={order._id} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0 hover:bg-muted/20 rounded-lg px-2 -mx-2 transition-colors">
+                              <div>
+                                <div className="font-bold text-sm">Order #{order.orderNumber}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {order.userId?.firstName || 'Guest'} {order.userId?.lastName || ''}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-bold text-sm">₹{order.total.toFixed(0)}</div>
+                                <div className="flex items-center gap-1 text-xs">
+                                  {getOrderStatusIcon(order.status)}
+                                  <span className="capitalize">{order.status}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {orders.length === 0 && (
+                            <p className="text-muted-foreground text-center py-8">
+                              <ShoppingCart className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                              No orders yet
+                            </p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Top Selling Products */}
+                  <div 
+                    className="group relative"
+                    style={{ perspective: '1000px' }}
+                  >
+                    <div 
+                      className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300"
+                      style={{ background: 'linear-gradient(135deg, #f9731640, #f9731620)' }}
+                    />
+                    <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg h-full">
+                      <CardHeader className="pb-3 border-b border-border/30">
+                        <CardTitle className="flex items-center gap-2 text-base font-bold">
+                          <div className="p-2 rounded-lg bg-orange-500/10">
+                            <TrendingUpIcon className="h-4 w-4 text-orange-600" />
+                          </div>
+                          Top Selling Products
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-4">
+                        <div className="space-y-3">
+                          {topProducts.slice(0, 5).map((product, i) => (
+                            <div key={i} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0 hover:bg-muted/20 rounded-lg px-2 -mx-2 transition-colors">
+                              <div className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 flex items-center justify-center text-xs font-bold text-orange-600">
+                                  {i + 1}
+                                </div>
+                                <div className="font-bold text-sm">{product.name}</div>
+                              </div>
+                              <div className="text-xs font-medium text-muted-foreground">{product.sales} sales</div>
+                            </div>
+                          ))}
+                          {topProducts.length === 0 && (
+                            <p className="text-muted-foreground text-center py-8">
+                              <TrendingUpIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                              No sales data yet
+                            </p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               </>
             )}

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Search, Tag, Calendar, Percent, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Tag, Calendar, Percent, DollarSign, Sparkles, Ticket } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface CouponManagementProps {
@@ -123,169 +123,211 @@ export function CouponManagement({
   );
 
   const getCouponStatus = (coupon: any) => {
-    if (!coupon.isActive) return { label: "Inactive", variant: "secondary" as const };
+    if (!coupon.isActive) return { label: "Inactive", variant: "secondary" as const, color: "#64748b" };
     
     const now = new Date();
     const validFrom = new Date(coupon.validFrom);
     const validUntil = new Date(coupon.validUntil);
     
-    if (now < validFrom) return { label: "Scheduled", variant: "outline" as const };
-    if (now > validUntil) return { label: "Expired", variant: "destructive" as const };
+    if (now < validFrom) return { label: "Scheduled", variant: "outline" as const, color: "#3b82f6" };
+    if (now > validUntil) return { label: "Expired", variant: "destructive" as const, color: "#ef4444" };
     
-    return { label: "Active", variant: "default" as const };
+    return { label: "Active", variant: "default" as const, color: "#10b981" };
   };
+
+  const couponStats = [
+    { label: "Total Coupons", value: coupons.length, color: "#6366f1", gradient: "from-indigo-500 to-violet-600" },
+    { label: "Active", value: coupons.filter(c => getCouponStatus(c).label === "Active").length, color: "#10b981", gradient: "from-emerald-500 to-green-600" },
+    { label: "Expired", value: coupons.filter(c => getCouponStatus(c).label === "Expired").length, color: "#ef4444", gradient: "from-red-500 to-rose-600" },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Coupon Management</h2>
-          <p className="text-muted-foreground">Create and manage discount coupons</p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="group" style={{ perspective: '1000px' }}>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full mb-2">
+            <Sparkles className="w-3 h-3" />
+            Discount Center
+          </div>
+          <h2 className="text-2xl font-black bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Coupon Management
+          </h2>
+          <p className="text-muted-foreground text-sm">Create and manage discount coupons</p>
         </div>
         
         <Dialog open={showCouponDialog} onOpenChange={setShowCouponDialog}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button 
+              onClick={resetForm}
+              className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white border-0 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Create Coupon
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+                <Ticket className="h-5 w-5 text-indigo-600" />
                 {editingCoupon ? "Edit Coupon" : "Create New Coupon"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-sm">
                 {editingCoupon ? "Update coupon settings and discount details." : "Create a new discount coupon for your customers."}
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="code">Coupon Code *</Label>
+                  <Label htmlFor="code" className="text-xs font-medium">Coupon Code *</Label>
                   <Input
                     id="code"
                     value={couponForm.code}
                     onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
                     placeholder="SAVE20"
                     required
+                    className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors font-mono"
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="description">Description *</Label>
+                  <Label htmlFor="description" className="text-xs font-medium">Description *</Label>
                   <Input
                     id="description"
                     value={couponForm.description}
                     onChange={(e) => setCouponForm({ ...couponForm, description: e.target.value })}
                     placeholder="Get 20% off on all items"
                     required
+                    className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                   />
                 </div>
                 
-                <div>
-                  <Label htmlFor="discountType">Discount Type</Label>
-                  <Select
-                    value={couponForm.discountType}
-                    onValueChange={(value) => setCouponForm({ ...couponForm, discountType: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select discount type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percentage">Percentage</SelectItem>
-                      <SelectItem value="fixed">Fixed Amount</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="discountValue">
-                    Discount Value * {couponForm.discountType === 'percentage' ? '(%)' : '(₹)'}
-                  </Label>
-                  <Input
-                    id="discountValue"
-                    type="number"
-                    value={couponForm.discountValue}
-                    onChange={(e) => setCouponForm({ ...couponForm, discountValue: parseFloat(e.target.value) || 0 })}
-                    placeholder={couponForm.discountType === 'percentage' ? '20' : '10.00'}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="discountType" className="text-xs font-medium">Discount Type</Label>
+                    <Select
+                      value={couponForm.discountType}
+                      onValueChange={(value) => setCouponForm({ ...couponForm, discountType: value })}
+                    >
+                      <SelectTrigger className="h-9 text-sm border-border/50 hover:border-indigo-500/50 transition-colors">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="discountValue" className="text-xs font-medium">
+                      Value {couponForm.discountType === 'percentage' ? '(%)' : '(₹)'} *
+                    </Label>
+                    <Input
+                      id="discountValue"
+                      type="number"
+                      value={couponForm.discountValue}
+                      onChange={(e) => setCouponForm({ ...couponForm, discountValue: parseFloat(e.target.value) || 0 })}
+                      placeholder={couponForm.discountType === 'percentage' ? '20' : '10.00'}
+                      required
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
               
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="minPurchase">Minimum Purchase Amount (₹)</Label>
-                  <Input
-                    id="minPurchase"
-                    type="number"
-                    value={couponForm.minPurchase}
-                    onChange={(e) => setCouponForm({ ...couponForm, minPurchase: parseFloat(e.target.value) || 0 })}
-                    placeholder="0.00"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="minPurchase" className="text-xs font-medium">Min Purchase (₹)</Label>
+                    <Input
+                      id="minPurchase"
+                      type="number"
+                      value={couponForm.minPurchase}
+                      onChange={(e) => setCouponForm({ ...couponForm, minPurchase: parseFloat(e.target.value) || 0 })}
+                      placeholder="0.00"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="maxDiscount" className="text-xs font-medium">Max Discount (₹)</Label>
+                    <Input
+                      id="maxDiscount"
+                      type="number"
+                      value={couponForm.maxDiscount}
+                      onChange={(e) => setCouponForm({ ...couponForm, maxDiscount: parseFloat(e.target.value) || 0 })}
+                      placeholder="0.00"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
+                    />
+                  </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="maxDiscount">Max Discount Amount (₹)</Label>
-                  <Input
-                    id="maxDiscount"
-                    type="number"
-                    value={couponForm.maxDiscount}
-                    onChange={(e) => setCouponForm({ ...couponForm, maxDiscount: parseFloat(e.target.value) || 0 })}
-                    placeholder="0.00 (unlimited)"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="usageLimit">Usage Limit</Label>
+                  <Label htmlFor="usageLimit" className="text-xs font-medium">Usage Limit</Label>
                   <Input
                     id="usageLimit"
                     type="number"
                     value={couponForm.usageLimit}
                     onChange={(e) => setCouponForm({ ...couponForm, usageLimit: parseInt(e.target.value) || 0 })}
                     placeholder="0 (unlimited)"
+                    className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                   />
                 </div>
                 
-                <div>
-                  <Label htmlFor="validFrom">Valid From *</Label>
-                  <Input
-                    id="validFrom"
-                    type="date"
-                    value={couponForm.validFrom}
-                    onChange={(e) => setCouponForm({ ...couponForm, validFrom: e.target.value })}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="validUntil">Valid Until *</Label>
-                  <Input
-                    id="validUntil"
-                    type="date"
-                    value={couponForm.validUntil}
-                    onChange={(e) => setCouponForm({ ...couponForm, validUntil: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="validFrom" className="text-xs font-medium flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Valid From *
+                    </Label>
+                    <Input
+                      id="validFrom"
+                      type="date"
+                      value={couponForm.validFrom}
+                      onChange={(e) => setCouponForm({ ...couponForm, validFrom: e.target.value })}
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="validUntil" className="text-xs font-medium flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Valid Until *
+                    </Label>
+                    <Input
+                      id="validUntil"
+                      type="date"
+                      value={couponForm.validUntil}
+                      onChange={(e) => setCouponForm({ ...couponForm, validUntil: e.target.value })}
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 pt-4">
+            <label className="flex items-center gap-2 cursor-pointer pt-4 border-t border-border/40">
               <input
                 type="checkbox"
                 id="isActive"
                 checked={couponForm.isActive}
                 onChange={(e) => setCouponForm({ ...couponForm, isActive: e.target.checked })}
+                className="w-4 h-4 rounded border-border/50 text-indigo-600 focus:ring-indigo-500"
               />
-              <Label htmlFor="isActive">Active Coupon</Label>
-            </div>
+              <Label htmlFor="isActive" className="text-xs font-medium cursor-pointer">Active Coupon</Label>
+            </label>
             
-            <div className="flex gap-2 pt-4">
-              <Button onClick={handleSubmit} disabled={isLoading}>
+            <div className="flex gap-2 pt-4 border-t border-border/40">
+              <Button 
+                onClick={handleSubmit} 
+                disabled={isLoading}
+                className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white border-0"
+              >
                 {isLoading ? "Saving..." : editingCoupon ? "Update Coupon" : "Create Coupon"}
               </Button>
-              <Button variant="outline" onClick={() => setShowCouponDialog(false)}>
+              <Button variant="outline" onClick={() => setShowCouponDialog(false)} className="border-border/50 hover:border-border transition-colors">
                 Cancel
               </Button>
             </div>
@@ -293,93 +335,151 @@ export function CouponManagement({
         </Dialog>
       </div>
 
-      <div className="flex items-center gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {couponStats.map((stat) => (
+          <div 
+            key={stat.label}
+            className="group relative"
+            style={{ perspective: '1000px' }}
+          >
+            <div 
+              className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300"
+              style={{ background: `linear-gradient(135deg, ${stat.color}40, ${stat.color}20)` }}
+            />
+            <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg group-hover:scale-[1.02] transform-gpu h-full">
+              <div 
+                className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-10`}
+              />
+              <CardContent className="relative p-4 text-center">
+                <div className="text-2xl font-black" style={{ color: stat.color }}>{stat.value}</div>
+                <div className="text-xs text-muted-foreground font-medium">{stat.label}</div>
+              </CardContent>
+              
+              {/* Shine effect */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:left-[150%] transition-all duration-700" />
+              </div>
+            </Card>
+          </div>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Search coupons..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-9 border-border/50 focus:border-indigo-500/50 transition-colors"
           />
         </div>
-        <Badge variant="secondary">{filteredCoupons.length} coupons</Badge>
+        <Badge variant="secondary" className="h-9 px-3">{filteredCoupons.length} coupons</Badge>
       </div>
 
-      <div className="grid gap-4">
+      {/* Coupons List */}
+      <div className="grid gap-3">
         {filteredCoupons.map((coupon) => {
           const status = getCouponStatus(coupon);
           return (
-            <Card key={coupon._id}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-5 w-5 text-primary" />
-                        <h3 className="font-bold text-lg">{coupon.code}</h3>
+            <div 
+              key={coupon._id}
+              className="group relative"
+              style={{ perspective: '1000px' }}
+            >
+              <div 
+                className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300 bg-gradient-to-r from-indigo-500/20 to-violet-500/20"
+              />
+              <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-500/10 to-violet-500/10 shrink-0">
+                        <Tag className="h-5 w-5 text-indigo-600" />
                       </div>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <div className="space-y-2 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm font-mono">{coupon.code}</h3>
+                          <Badge 
+                            variant={status.variant}
+                            className="text-[10px] font-bold h-5"
+                            style={status.label === "Active" ? { backgroundColor: `${status.color}10`, color: status.color, borderColor: `${status.color}20` } : {}}
+                          >
+                            {status.label}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/30">
+                            {coupon.discountType === 'percentage' ? (
+                              <Percent className="h-3 w-3" />
+                            ) : (
+                              <DollarSign className="h-3 w-3" />
+                            )}
+                            <span className="font-medium">
+                              {coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} OFF`}
+                            </span>
+                          </div>
+                          
+                          {coupon.minPurchase > 0 && (
+                            <span className="px-2 py-0.5 rounded-full bg-muted/30">Min: ₹{coupon.minPurchase}</span>
+                          )}
+                          
+                          {coupon.maxDiscount > 0 && (
+                            <span className="px-2 py-0.5 rounded-full bg-muted/30">Max: ₹{coupon.maxDiscount}</span>
+                          )}
+                          
+                          {coupon.usageLimit > 0 && (
+                            <span className="px-2 py-0.5 rounded-full bg-muted/30">Uses: {coupon.usedCount || 0}/{coupon.usageLimit}</span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(coupon.validFrom).toLocaleDateString()} - {new Date(coupon.validUntil).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        {coupon.type === 'percentage' ? (
-                          <Percent className="h-4 w-4" />
-                        ) : (
-                          <DollarSign className="h-4 w-4" />
-                        )}
-                        <span>
-                          {coupon.type === 'percentage' ? `${coupon.value}% OFF` : `₹${coupon.value} OFF`}
-                        </span>
-                      </div>
-                      
-                      {coupon.minOrderAmount > 0 && (
-                        <span>Min: ₹{coupon.minOrderAmount}</span>
-                      )}
-                      
-                      {coupon.maxDiscountAmount > 0 && (
-                        <span>Max: ₹{coupon.maxDiscountAmount}</span>
-                      )}
-                      
-                      {coupon.usageLimit > 0 && (
-                        <span>Uses: {coupon.usedCount || 0}/{coupon.usageLimit}</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <span>
-                        {new Date(coupon.validFrom).toLocaleDateString()} - {new Date(coupon.validUntil).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="h-8 w-8 p-0 border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all"
+                        onClick={() => openEditCoupon(coupon)}
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="h-8 w-8 p-0 border-border/50 hover:border-red-500/50 hover:bg-red-500/5 transition-all"
+                        onClick={() => handleDeleteCoupon(coupon._id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => openEditCoupon(coupon)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDeleteCoupon(coupon._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           );
         })}
       </div>
 
+      {/* Empty State */}
       {filteredCoupons.length === 0 && (
-        <Card>
+        <Card className="border-dashed border-border/40">
           <CardContent className="p-12 text-center">
-            <Tag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No coupons found</h3>
-            <p className="text-muted-foreground">
+            <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+              <Tag className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-bold mb-2">No coupons found</h3>
+            <p className="text-sm text-muted-foreground">
               {searchTerm 
                 ? "Try adjusting your search terms" 
                 : "Create your first coupon to offer discounts to customers"}

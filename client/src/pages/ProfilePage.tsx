@@ -922,7 +922,7 @@ export default function ProfilePage() {
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="font-semibold">${order.total.toFixed(2)}</p>
+                              <p className="font-semibold">₹{order.total.toFixed(0)}</p>
                               <p className="text-sm text-muted-foreground">
                                 {order.items.length} item{order.items.length > 1 ? 's' : ''}
                               </p>
@@ -943,7 +943,7 @@ export default function ProfilePage() {
                                     Qty: {item.quantity} • Size: {item.size} • Color: {item.color}
                                   </p>
                                 </div>
-                                <p className="text-sm font-medium">${item.price.toFixed(2)}</p>
+                                <p className="text-sm font-medium">₹{item.price.toFixed(0)}</p>
                               </div>
                             ))}
                             {order.items.length > 2 && (
@@ -1007,10 +1007,10 @@ export default function ProfilePage() {
                           <div className="space-y-2">
                             <h3 className="font-medium text-sm line-clamp-2">{item.name}</h3>
                             <div className="flex items-center gap-2">
-                              <span className="font-bold">${item.price}</span>
+                              <span className="font-bold">₹{item.price}</span>
                               {item.originalPrice && (
                                 <span className="text-sm text-muted-foreground line-through">
-                                  ${item.originalPrice}
+                                  ₹{item.originalPrice}
                                 </span>
                               )}
                             </div>

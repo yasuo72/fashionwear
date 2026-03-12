@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Eye, Sparkles, Package, Tag, Image, Layers } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface ProductManagementProps {
@@ -208,57 +208,77 @@ export function ProductManagement({
     product.brand.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const productStats = [
+    { label: "Total Products", value: products.length, color: "#6366f1", gradient: "from-indigo-500 to-violet-600" },
+    { label: "Active", value: products.filter(p => p.isActive).length, color: "#10b981", gradient: "from-emerald-500 to-green-600" },
+    { label: "Featured", value: products.filter(p => p.isFeatured).length, color: "#f59e0b", gradient: "from-amber-500 to-orange-600" },
+    { label: "On Sale", value: products.filter(p => p.discount > 0).length, color: "#ef4444", gradient: "from-red-500 to-rose-600" },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Product Management</h2>
-          <p className="text-muted-foreground">Manage your product inventory</p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="group" style={{ perspective: '1000px' }}>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full mb-2">
+            <Sparkles className="w-3 h-3" />
+            Inventory Control
+          </div>
+          <h2 className="text-2xl font-black bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Product Management
+          </h2>
+          <p className="text-muted-foreground text-sm">Manage your product inventory</p>
         </div>
         
         <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button 
+              onClick={resetForm}
+              className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white border-0 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Product
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+                <Package className="h-5 w-5 text-indigo-600" />
                 {editingProduct ? "Edit Product" : "Add New Product"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-sm">
                 {editingProduct ? "Update product information and inventory details." : "Create a new product with images, pricing, and variants."}
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Product Name</Label>
+                  <Label htmlFor="name" className="text-xs font-medium">Product Name</Label>
                   <Input
                     id="name"
                     value={productForm.name}
                     onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
                     placeholder="Enter product name"
+                    className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-xs font-medium">Description</Label>
                   <Textarea
                     id="description"
                     value={productForm.description}
                     onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                     placeholder="Enter product description"
                     rows={3}
+                    className="text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="price">Price (₹)</Label>
+                    <Label htmlFor="price" className="text-xs font-medium">Price (₹)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -267,10 +287,11 @@ export function ProductManagement({
                       value={productForm.price || ''}
                       onChange={(e) => setProductForm({ ...productForm, price: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
                       placeholder="0.00"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                    <Label htmlFor="originalPrice" className="text-xs font-medium">Original Price (₹)</Label>
                     <Input
                       id="originalPrice"
                       type="number"
@@ -279,13 +300,14 @@ export function ProductManagement({
                       value={productForm.originalPrice || ''}
                       onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
                       placeholder="0.00"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                     />
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="discount">Discount (%)</Label>
+                    <Label htmlFor="discount" className="text-xs font-medium">Discount (%)</Label>
                     <Input
                       id="discount"
                       type="number"
@@ -294,26 +316,28 @@ export function ProductManagement({
                       value={productForm.discount || ''}
                       onChange={(e) => setProductForm({ ...productForm, discount: e.target.value === '' ? 0 : parseInt(e.target.value) })}
                       placeholder="0"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="brand">Brand</Label>
+                    <Label htmlFor="brand" className="text-xs font-medium">Brand</Label>
                     <Input
                       id="brand"
                       value={productForm.brand}
                       onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
                       placeholder="Enter brand name"
+                      className="h-9 text-sm border-border/50 focus:border-indigo-500/50 transition-colors"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category" className="text-xs font-medium">Category</Label>
                   <Select
                     value={productForm.categoryId}
                     onValueChange={(value) => setProductForm({ ...productForm, categoryId: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 text-sm border-border/50 hover:border-indigo-500/50 transition-colors">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -329,70 +353,85 @@ export function ProductManagement({
               
               <div className="space-y-4">
                 <div>
-                  <Label>Product Images</Label>
+                  <Label className="text-xs font-medium flex items-center gap-1">
+                    <Image className="h-3 w-3" />
+                    Product Images
+                  </Label>
                   {productForm.images.map((image, index) => (
                     <div key={index} className="flex gap-2 mb-2">
                       <Input
                         value={image}
                         onChange={(e) => updateImage(index, e.target.value)}
                         placeholder="Enter image URL"
+                        className="h-8 text-xs border-border/50 focus:border-indigo-500/50 transition-colors"
                       />
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="h-8 w-8 p-0 border-border/50 hover:border-red-500/50 hover:bg-red-500/5 transition-all"
                         onClick={() => removeImage(index)}
                         disabled={productForm.images.length === 1}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   ))}
-                  <Button type="button" variant="outline" size="sm" onClick={addImage}>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all" onClick={addImage}>
+                    <Plus className="h-3 w-3 mr-1" />
                     Add Image
                   </Button>
                 </div>
                 
                 <div>
-                  <Label>Product Tags</Label>
+                  <Label className="text-xs font-medium flex items-center gap-1">
+                    <Tag className="h-3 w-3" />
+                    Product Tags
+                  </Label>
                   {productForm.tags.map((tag, index) => (
                     <div key={index} className="flex gap-2 mb-2">
                       <Input
                         value={tag}
                         onChange={(e) => updateTag(index, e.target.value)}
                         placeholder="Enter tag"
+                        className="h-8 text-xs border-border/50 focus:border-indigo-500/50 transition-colors"
                       />
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="h-8 w-8 p-0 border-border/50 hover:border-red-500/50 hover:bg-red-500/5 transition-all"
                         onClick={() => removeTag(index)}
                         disabled={productForm.tags.length === 1}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   ))}
-                  <Button type="button" variant="outline" size="sm" onClick={addTag}>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all" onClick={addTag}>
+                    <Plus className="h-3 w-3 mr-1" />
                     Add Tag
                   </Button>
                 </div>
                 
                 <div>
-                  <Label>Product Variants</Label>
+                  <Label className="text-xs font-medium flex items-center gap-1">
+                    <Layers className="h-3 w-3" />
+                    Product Variants
+                  </Label>
                   {productForm.variants.map((variant, index) => (
                     <div key={index} className="grid grid-cols-4 gap-2 mb-2">
                       <Input
                         value={variant.size}
                         onChange={(e) => updateVariant(index, 'size', e.target.value)}
                         placeholder="Size"
+                        className="h-8 text-xs border-border/50 focus:border-indigo-500/50 transition-colors"
                       />
                       <Input
                         value={variant.color}
                         onChange={(e) => updateVariant(index, 'color', e.target.value)}
                         placeholder="Color"
+                        className="h-8 text-xs border-border/50 focus:border-indigo-500/50 transition-colors"
                       />
                       <Input
                         type="number"
@@ -400,52 +439,60 @@ export function ProductManagement({
                         value={variant.stock || ''}
                         onChange={(e) => updateVariant(index, 'stock', e.target.value === '' ? 0 : parseInt(e.target.value))}
                         placeholder="Stock"
+                        className="h-8 text-xs border-border/50 focus:border-indigo-500/50 transition-colors"
                       />
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="h-8 w-8 p-0 border-border/50 hover:border-red-500/50 hover:bg-red-500/5 transition-all"
                         onClick={() => removeVariant(index)}
                         disabled={productForm.variants.length === 1}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   ))}
-                  <Button type="button" variant="outline" size="sm" onClick={addVariant}>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all" onClick={addVariant}>
+                    <Plus className="h-3 w-3 mr-1" />
                     Add Variant
                   </Button>
                 </div>
                 
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-4 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       id="isFeatured"
                       checked={productForm.isFeatured}
                       onChange={(e) => setProductForm({ ...productForm, isFeatured: e.target.checked })}
+                      className="w-4 h-4 rounded border-border/50 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <Label htmlFor="isFeatured">Featured Product</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="isFeatured" className="text-xs font-medium cursor-pointer">Featured Product</Label>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       id="isActive"
                       checked={productForm.isActive}
                       onChange={(e) => setProductForm({ ...productForm, isActive: e.target.checked })}
+                      className="w-4 h-4 rounded border-border/50 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <Label htmlFor="isActive">Active</Label>
-                  </div>
+                    <Label htmlFor="isActive" className="text-xs font-medium cursor-pointer">Active</Label>
+                  </label>
                 </div>
               </div>
             </div>
             
-            <div className="flex gap-2 pt-4">
-              <Button onClick={handleSubmit} disabled={isLoading}>
+            <div className="flex gap-2 pt-4 border-t border-border/40">
+              <Button 
+                onClick={handleSubmit} 
+                disabled={isLoading}
+                className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white border-0"
+              >
                 {isLoading ? "Saving..." : editingProduct ? "Update Product" : "Create Product"}
               </Button>
-              <Button variant="outline" onClick={() => setShowProductDialog(false)}>
+              <Button variant="outline" onClick={() => setShowProductDialog(false)} className="border-border/50 hover:border-border transition-colors">
                 Cancel
               </Button>
             </div>
@@ -453,74 +500,141 @@ export function ProductManagement({
         </Dialog>
       </div>
 
-      <div className="flex items-center gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {productStats.map((stat) => (
+          <div 
+            key={stat.label}
+            className="group relative"
+            style={{ perspective: '1000px' }}
+          >
+            <div 
+              className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300"
+              style={{ background: `linear-gradient(135deg, ${stat.color}40, ${stat.color}20)` }}
+            />
+            <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg group-hover:scale-[1.02] transform-gpu h-full">
+              <div 
+                className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-10`}
+              />
+              <CardContent className="relative p-4 text-center">
+                <div className="text-2xl font-black" style={{ color: stat.color }}>{stat.value}</div>
+                <div className="text-xs text-muted-foreground font-medium">{stat.label}</div>
+              </CardContent>
+              
+              {/* Shine effect */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:left-[150%] transition-all duration-700" />
+              </div>
+            </Card>
+          </div>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-9 border-border/50 focus:border-indigo-500/50 transition-colors"
           />
         </div>
-        <Badge variant="secondary">{filteredProducts.length} products</Badge>
+        <Badge variant="secondary" className="h-9 px-3">{filteredProducts.length} products</Badge>
       </div>
 
-      <div className="grid gap-4">
+      {/* Products List */}
+      <div className="grid gap-3">
         {filteredProducts.map((product) => (
-          <Card key={product._id}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex gap-4">
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold">₹{product.price}</span>
+          <div 
+            key={product._id}
+            className="group relative"
+            style={{ perspective: '1000px' }}
+          >
+            <div 
+              className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 blur-[1px] transition-all duration-300 bg-gradient-to-r from-indigo-500/20 to-violet-500/20"
+            />
+            <Card className="relative overflow-hidden rounded-xl border border-border/40 hover:border-border/60 transition-all duration-300 group-hover:shadow-lg">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative overflow-hidden rounded-lg shrink-0">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-14 h-14 object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-sm truncate">{product.name}</h3>
+                    <p className="text-xs text-muted-foreground">{product.brand}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-bold text-sm text-indigo-600">₹{product.price}</span>
                       {product.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through">
+                        <span className="text-xs text-muted-foreground line-through">
                           ₹{product.originalPrice}
                         </span>
                       )}
                       {product.discount && (
-                        <Badge variant="destructive">{product.discount}% OFF</Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant={product.isActive ? "default" : "secondary"}>
-                        {product.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                      {product.isFeatured && (
-                        <Badge variant="outline">Featured</Badge>
+                        <Badge variant="destructive" className="text-[10px] font-bold h-5">{product.discount}% OFF</Badge>
                       )}
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Badge 
+                      variant={product.isActive ? "default" : "secondary"}
+                      className={`text-[10px] font-bold h-5 ${product.isActive ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : ''}`}
+                    >
+                      {product.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                    {product.isFeatured && (
+                      <Badge variant="outline" className="text-[10px] font-bold h-5 border-amber-500/30 text-amber-600">Featured</Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="h-8 w-8 p-0 border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="h-8 w-8 p-0 border-border/50 hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all"
+                      onClick={() => openEditProduct(product)}
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="h-8 w-8 p-0 border-border/50 hover:border-red-500/50 hover:bg-red-500/5 transition-all"
+                      onClick={() => onDeleteProduct(product._id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => openEditProduct(product)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => onDeleteProduct(product._id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+        
+        {filteredProducts.length === 0 && (
+          <Card className="border-dashed border-border/40">
+            <CardContent className="p-12 text-center">
+              <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                <Package className="h-8 w-8 text-muted-foreground" />
               </div>
+              <h3 className="text-lg font-bold mb-2">No products found</h3>
+              <p className="text-sm text-muted-foreground">
+                {searchTerm ? "Try adjusting your search" : "Add your first product to get started"}
+              </p>
             </CardContent>
           </Card>
-        ))}
+        )}
       </div>
     </div>
   );
